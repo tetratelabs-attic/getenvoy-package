@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Fake ld.gold that uses lld, alpine gcc doesn't recognize it directly
+/usr/bin/ld.lld $@

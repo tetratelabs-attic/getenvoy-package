@@ -1,0 +1,4 @@
+#!/bin/bash
+set -ex
+
+find envoy_pkg common -type f -name '*.py' -user "${USER}" | grep -v 'envoy/src' | xargs yapf --in-place

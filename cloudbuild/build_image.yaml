@@ -1,0 +1,61 @@
+steps:
+- id: reset
+  name: gcr.io/cloud-builders/git
+  args: ['reset', '--hard', '$_GIT_SHA']
+
+- id: make
+  name: gcr.io/cloud-builders/docker
+  args: ['build', '-t', 'make', '-f', 'cloudbuild/Dockerfile.deps', '.']
+
+- id: common
+  name: make
+  args: ['common']
+
+- id: build-alpine
+  waitFor: ['common']
+  name: make
+  args: ['alpine']
+
+- id: build-centos
+  waitFor: ['common']
+  name: make
+  args: ['centos']
+
+- id: build-ubuntu-xenial
+  waitFor: ['common']
+  name: make
+  args: ['ubuntu-xenial']
+
+- name: gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
+  waitFor: ['build-alpine']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--test_package']
+  env:
+  - 'ENVOY_DIST=alpine'
+
+- name: gcr.io/getenvoy-package/build-centos:$_GIT_SHA
+  waitFor: ['build-centos']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--test_package']
+  env:
+  - 'ENVOY_DIST=centos'
+
+- name: gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
+  waitFor: ['build-ubuntu-xenial']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--test_package', '--test_distroless']
+  env:
+  - 'ENVOY_DIST=ubuntu-xenial'
+
+images:
+  - gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
+  - gcr.io/getenvoy-package/build-centos:$_GIT_SHA
+  - gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
+options:
+  workerPool: 'getenvoy-package/envoy-build'
+  env:
+  - 'TEST_TMPDIR=/tmp'
+timeout: 3600s

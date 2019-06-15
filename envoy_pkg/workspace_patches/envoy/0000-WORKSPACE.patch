@@ -1,0 +1,20 @@
+diff --git a/WORKSPACE b/WORKSPACE
+index ec06147ab..b4974485a 100644
+--- a/WORKSPACE
++++ b/WORKSPACE
+@@ -1,7 +1,12 @@
+-workspace(name = "envoy")
++workspace(name = "envoy_pkg")
+ 
+-load("//bazel:repositories.bzl", "GO_VERSION", "envoy_dependencies")
+-load("//bazel:cc_configure.bzl", "cc_configure")
++local_repository(
++    name = "envoy",
++    path = "envoy",
++)
++
++load("@envoy//bazel:repositories.bzl", "GO_VERSION", "envoy_dependencies")
++load("@envoy//bazel:cc_configure.bzl", "cc_configure")
+ 
+ envoy_dependencies()
+ 

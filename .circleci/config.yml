@@ -1,0 +1,104 @@
+version: 2.0
+
+references:
+  mac: &mac
+    macos:
+      xcode: '10.1.0'
+    working_directory: ~/envoy-package
+
+jobs:
+  lint:
+    resource_class: small
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - run: sudo pip install yapf flake8
+      - run: ./ci/lint
+
+  build_mac:
+    <<: *mac
+    steps:
+      - checkout
+      - run: git status # to fix CircleCI spurious git error
+      - run: make push
+      - persist_to_workspace:
+          root: ~/envoy-package
+          paths:
+            - .
+
+  build_and_test_linux:
+    resource_class: small
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      - run: |
+          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+          gcloud config set gcloudignore/enabled false
+          gcloud builds submit --config=cloudbuild/build_image.yaml . \
+              --project ${GOOGLE_PROJECT_ID} --substitutions _GIT_SHA=${CIRCLE_SHA1}
+
+  release_mac:
+    <<: *mac
+    steps:
+      - attach_workspace:
+          at: ~/envoy-package
+      - run: git status # to fix CircleCI spurious git error
+      - run: make release
+
+  release_linux:
+    resource_class: small
+    docker:
+      - image: google/cloud-sdk
+    working_directory: ~/envoy-package
+    steps:
+      - run: |
+          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+          gcloud auth configure-docker
+          gcloud container images add-tag gcr.io/getenvoy-package/build-alpine:$CIRCLE_SHA1 \
+                                          gcr.io/getenvoy-package/build-alpine:latest --quiet
+          gcloud container images add-tag gcr.io/getenvoy-package/build-centos:$CIRCLE_SHA1 \
+                                          gcr.io/getenvoy-package/build-centos:latest --quiet
+          gcloud container images add-tag gcr.io/getenvoy-package/build-ubuntu-xenial:$CIRCLE_SHA1 \
+                                          gcr.io/getenvoy-package/build-ubuntu-xenial:latest --quiet
+
+  test_envoy_build_mac:
+    <<: *mac
+    environment:
+      ENVOY_DIST: darwin
+    steps:
+      - checkout
+      - run: git status # to fix CircleCI spurious git error
+      - run: ./envoy_pkg/build_context.py --download --tag $CIRCLE_SHA1
+      - run: /usr/local/opt/envoy_pkg/package_envoy.py --test_package
+
+
+workflows:
+  version: 2
+  all:
+    jobs:
+      - lint
+      - build_and_test_linux:
+          requires:
+            - lint
+      - build_mac:
+          requires:
+            - lint
+      - test_envoy_build_mac:
+          requires:
+            - build_mac
+      - release_mac:
+          requires:
+            - test_envoy_build_mac
+          filters:
+            branches:
+              only:
+                - master
+      - release_linux:
+          requires:
+            - build_and_test_linux
+          filters:
+            branches:
+              only:
+                - master

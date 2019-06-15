@@ -1,0 +1,42 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+SED_CMD = "sed -i.bak " + " ".join(["-e '%s'" % e for e in [
+    's~name = "six"~name = "six_workaround"~',
+    's~"@six//:six"~"@six_workaround//:six_workaround"~',
+    's~\"@six\"~\"@six_workaround\"~',
+    's~if "six" not in excludes~if "six_workaround" not in excludes~',]])
+
+CONTAINERREGISTRY_RELEASE = "v0.0.34"
+
+http_archive(
+    name = "containerregistry",
+    sha256 = "8182728578f7d7178e7efcef8ce9074988a1a2667f20ecff5cf6234fba284dd3",
+    strip_prefix = "containerregistry-" + CONTAINERREGISTRY_RELEASE[1:],
+    urls = [("https://github.com/google/containerregistry/archive/" +
+             CONTAINERREGISTRY_RELEASE + ".tar.gz")],
+    patch_cmds = [SED_CMD + " def.bzl BUILD.bazel"],
+)
+
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "aed1c249d4ec8f703edddf35cbe9dfaca0b5f5ea6e4cd9e83e99f3b0d1136c3d",
+    strip_prefix = "rules_docker-0.7.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.7.0.tar.gz"],
+    patch_cmds = [SED_CMD + " repositories/repositories.bzl"],
+)
+
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+
+container_repositories()
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
+
+container_pull(
+    name = "distroless_base",
+    digest = "sha256:edc3643ddf96d75032a55e240900b68b335186f1e5fea0a95af3b4cc96020b77", # 2019-05-29
+    registry = "gcr.io",
+    repository = "distroless/base",
+)

@@ -1,0 +1,8 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Istio Proxy
+Source: <https://github.com/envoyproxy/envo://github.com/istio/proxy>
+
+Files: *
+Copyright: Copyright 2016 Istio Authors
+License: Apache
+/usr/share/common-licenses/Apache-2.0

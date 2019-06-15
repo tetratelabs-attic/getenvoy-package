@@ -1,0 +1,9 @@
+projectId: getenvoy-package
+workerCount: 1
+regions:
+- us-central1
+- us-west1
+name: envoy-build
+workerConfig:
+  machineType: n1-standard-16
+  diskSizeGb: 200

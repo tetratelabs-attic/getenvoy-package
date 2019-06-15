@@ -1,0 +1,7 @@
+#!/bin/bash
+set -ex
+# Currently, this just includes format checking, eventually includes lint etc.
+
+find envoy_pkg common -type f -name '*.py' -user "${USER:-$(id -u -n)}" | grep -v 'envoy/src' | xargs yapf --diff
+
+flake8 envoy_pkg common

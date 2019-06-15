@@ -1,0 +1,21 @@
+diff --git a/WORKSPACE b/WORKSPACE
+index 1b23022..6dfae71 100644
+--- a/WORKSPACE
++++ b/WORKSPACE
+@@ -14,11 +14,15 @@
+ #
+ ################################################################################
+ #
++local_repository(
++    name = "proxy",
++    path = "envoy",
++)
+ 
+ # http_archive is not a native function since bazel 0.19
+ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+ load(
+-    "//:repositories.bzl",
++    "@proxy//:repositories.bzl",
+     "googletest_repositories",
+     "mixerapi_dependencies",
+ )
