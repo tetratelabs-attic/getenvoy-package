@@ -15,6 +15,6 @@ wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glib
 apk add --no-cache glibc-2.29-r0.apk
 rm -rf glibc-2.29-r0.apk
 
-apk add --no-cache libstdc++ alpine-sdk linux-headers coreutils libgcc gcc g++ lld libexecinfo-dev py2-pip cmake ninja autoconf libtool
+apk add --no-cache libstdc++ alpine-sdk linux-headers coreutils libgcc gcc g++ lld libexecinfo-dev libexecinfo-static py2-pip cmake ninja autoconf libtool
 
 ./build_container_common.sh
