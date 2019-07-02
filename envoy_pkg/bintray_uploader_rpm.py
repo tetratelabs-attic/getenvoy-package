@@ -38,11 +38,11 @@ DIST_RELEASE_PAIRS = [
     },
     {
         'dist': 'rhel',
-        'releasever': '7'
+        'releasever': '7Server'
     },
     {
         'dist': 'rhel',
-        'releasever': '8'
+        'releasever': '8Server'
     },
 ]
 
