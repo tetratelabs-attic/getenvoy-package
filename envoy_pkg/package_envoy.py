@@ -275,7 +275,7 @@ def buildDebPackage(args, package_version, variant):
     with open(DEB_VERSION_FILE_PATH, 'w') as f:
         f.write(package_version.deb_version)
     options = bazelOptions(args)
-    # XXX: Enforce python2 until all dependent libraries are fixed.
+    # TODO(taiki45): Enforce python2 until all dependent libraries are fixed.
     options['host_force_python'].append('PY2')
     runBazel(
         'build',
