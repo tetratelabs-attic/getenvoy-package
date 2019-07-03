@@ -274,10 +274,13 @@ def packageBinary(args, version):
 def buildDebPackage(args, package_version, variant):
     with open(DEB_VERSION_FILE_PATH, 'w') as f:
         f.write(package_version.deb_version)
+    options = bazelOptions(args)
+    # XXX: Enforce python2 until all dependent libraries are fixed.
+    options['host_force_python'].append('PY2')
     runBazel(
         'build',
         ["//packages/{}:{}".format(args.variant, variant.deb_package_target)],
-        options=bazelOptions(args))
+        options=options)
 
 
 def buildRpmPackage(args, package_version, variant):
