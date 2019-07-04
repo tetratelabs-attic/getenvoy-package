@@ -38,6 +38,9 @@ DIST_RELEASE_PAIRS = [
     },
     {
         'dist': 'rhel',
+        # RHEL sets the yum var to `${version_number}${variant}`, while CentOS's defaults are just a version number.
+        # See https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/deployment_guide/sec-using_yum_variables
+        # We can only assume the `Server` variant for our Envoy package.
         'releasever': '7Server'
     },
     {
