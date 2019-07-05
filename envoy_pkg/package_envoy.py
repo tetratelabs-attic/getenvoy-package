@@ -324,10 +324,13 @@ def signRpmPackage(package_path, gpg_secret_key, gpg_name):
 
 
 def buildDistrolessDocker(args, package_version, variant):
+    options = bazelOptions(args)
+    # TODO(taiki45): Enforce python2 until all dependent libraries are fixed.
+    options['host_force_python'].append('PY2')
     runBazel(
         'run',
         ["//packages/{}:{}".format(args.variant, variant.distroless_target)],
-        options=bazelOptions(args))
+        options=options)
 
 
 def storeArtifact(package_file):
