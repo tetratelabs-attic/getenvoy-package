@@ -53,6 +53,8 @@ def download(args):
             tar.extractall(path=args.build_context_path)
 
 
+# NOTE: Tetrate's Mac CI pipeline depends on these bintray_org, bintray_repo,
+#       bintray_pkg, and package_name to download build contexts.
 def main():
     logging.basicConfig(level=logging.INFO)
 
