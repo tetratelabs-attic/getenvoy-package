@@ -19,7 +19,9 @@ OUTPUT_DIR ?= ../build-image
 # available image is from:
 # https://hub.docker.com/r/envoyproxy/envoy-build/tags/
 # This should be updated to latest as long as it doesn't break build.
-UPSTREAM_ENVOY_BUILD_TAG = cfc514546bc0284536893cca5fa43d7128edcd35
+
+# 1.11.0
+UPSTREAM_ENVOY_BUILD_TAG = bf169f9d3c8f4c682650c5390c088a4898940913
 
 $(OUTPUT_DIR)/common-context.tar: create_context.py build_container ../envoy_pkg $(OUTPUT_DIR)/envoy
 	@./create_context.py --envoy_dir $(OUTPUT_DIR)/envoy --output $@
