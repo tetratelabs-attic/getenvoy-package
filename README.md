@@ -1,6 +1,6 @@
 # getenvoy-package
 
-This repository contains scripts for building [Envoy Proxy](https://www.envoyporxy.io/) for [GetEnvoy](https://www.getenvoy.io/).
+This repository contains scripts for building [Envoy Proxy](https://www.envoyproxy.io/) for [GetEnvoy](https://www.getenvoy.io/).
 
 # Directory Structure
 
