@@ -1,5 +1,19 @@
 #!/usr/bin/env python
 
+# Copyright 2019 Tetrate
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import argparse
 import atexit
 import collections
@@ -260,10 +274,13 @@ def packageBinary(args, version):
 def buildDebPackage(args, package_version, variant):
     with open(DEB_VERSION_FILE_PATH, 'w') as f:
         f.write(package_version.deb_version)
+    options = bazelOptions(args)
+    # TODO(taiki45): Enforce python2 until all dependent libraries are fixed.
+    options['host_force_python'].append('PY2')
     runBazel(
         'build',
         ["//packages/{}:{}".format(args.variant, variant.deb_package_target)],
-        options=bazelOptions(args))
+        options=options)
 
 
 def buildRpmPackage(args, package_version, variant):
@@ -307,10 +324,13 @@ def signRpmPackage(package_path, gpg_secret_key, gpg_name):
 
 
 def buildDistrolessDocker(args, package_version, variant):
+    options = bazelOptions(args)
+    # TODO(taiki45): Enforce python2 until all dependent libraries are fixed.
+    options['host_force_python'].append('PY2')
     runBazel(
         'run',
         ["//packages/{}:{}".format(args.variant, variant.distroless_target)],
-        options=bazelOptions(args))
+        options=options)
 
 
 def storeArtifact(package_file):
