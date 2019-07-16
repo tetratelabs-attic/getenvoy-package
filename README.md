@@ -1,5 +1,7 @@
 # getenvoy-package
 
+**GetEnvoy is spread across multiple repos. For more details head over to [GetEnvoy.io](https://getenvoy.io/github).**
+
 This repository contains scripts for building [Envoy Proxy](https://www.envoyproxy.io/) for [GetEnvoy](https://www.getenvoy.io/).
 
 # Directory Structure
