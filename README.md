@@ -11,7 +11,10 @@ It also include packaging tests and build targets for rpm/deb/tar/docker.
 
 # Build Image
 
-Run:
+The build image is a docker image contains all toolchains which is required to build Envoy, with some OS specific
+configuration and patches. This is based on Envoy's [build_container](https://github.com/envoyproxy/envoy/tree/master/ci/build_container) scripts.
+
+To build the image, run:
 ```
 $ make
 ```
@@ -21,7 +24,9 @@ The docker images will be tagged as `gcr.io/getenvoy-package/build-<DISTRIBUTION
 
 CI built images are published to [`gcr.io/getenvoy-package`](https://gcr.io/getenvoy-package).
 
-# Build Envoy with the Image
+# Build GetEnvoy package
+
+To build the GetEnvoy package with the build image, run:
 
 ```
 docker run -v ${OUTPUT_DIR}:/tmp/packaged gcr.io/getenvoy-package/build-<DISTRIBUTION>:<GIT_SHA> ./package_envoy.py --dist <DISTRIBUTION>
