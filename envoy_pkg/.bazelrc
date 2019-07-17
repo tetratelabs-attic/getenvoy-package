@@ -28,7 +28,7 @@ build:istio-proxy --incompatible_depset_union=false --incompatible_bzl_disallow_
 
 # GetEnvoy distributions
 build:alpine --define=tcmalloc=disabled --define=signal_trace=disabled
-build:alpine --linkopt -static --linkopt -lexecinfo --linkopt -Wl,--allow-multiple-definition
+build:alpine --linkopt -static --linkopt=-lstdc++ --linkopt=-lm --linkopt -lexecinfo --linkopt -Wl,--allow-multiple-definition
 build:alpine --linkopt -fuse-ld=gold
 
 build:centos --action_env=PATH=/opt/llvm/bin:/opt/rh/devtoolset-7/root/usr/bin:/opt/rh/rh-git218/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
