@@ -62,7 +62,7 @@ message OperatingSystem {
 }
 
 message Build {
-   string operating_system_version = 1;
+   repeated string operating_system_versions = 1;
    string download_location_url = 2;
 }
 
