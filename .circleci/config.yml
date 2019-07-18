@@ -28,8 +28,20 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install yapf flake8
-      - run: sudo wget -c https://github.com/liamawhite/licenser/releases/download/v0.3.3/licenser_0.3.3_Linux_x86_64.tar.gz -O - | sudo tar -xz -C /usr/bin
+      - run: ./ci/install-licenser
       - run: ./ci/lint
+  proto:
+    resource_class: small
+    docker:
+      - image: circleci/golang:1.12.6
+        environment:
+          GO111MODULE: "on"
+    steps:
+      - checkout
+      - run: ./ci/install-proto
+      - run: ./ci/install-licenser
+      - run: ./ci/proto
+
 
   build_mac:
     <<: *mac
@@ -93,7 +105,10 @@ workflows:
   version: 2
   all:
     jobs:
-      - lint
+      - proto
+      - lint:
+          requires:
+            - proto
       - build_and_test_linux:
           requires:
             - lint
