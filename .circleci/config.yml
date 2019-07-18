@@ -105,16 +105,16 @@ workflows:
   version: 2
   all:
     jobs:
-      - lint
       - proto
+      - lint:
+          requires:
+            - proto
       - build_and_test_linux:
           requires:
             - lint
-            - proto
       - build_mac:
           requires:
             - lint
-            - proto
       - test_envoy_build_mac:
           requires:
             - build_mac
