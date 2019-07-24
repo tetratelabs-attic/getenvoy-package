@@ -122,10 +122,10 @@ func (OperatingSystemName) EnumDescriptor() ([]byte, []int) {
 }
 
 // Builds must be uniquely addressable from the top level so that they can be used to look up the location of binaries.
-// Format: filter_profile(-compliance_profile):envoy_version/operating_system-operating_system_version
+// Format: filter_profile(-compliance_profile):envoy_version/operating_system_family
 // Examples:
-//   - istio-fips1402:1.10.1/ubuntu-16.04
-//   - standard:nightly/debian-8
+//   - istio-fips1402:1.10.1/debian (for Ubuntu & Debian)
+//   - standard:1.11.1/darwin (for MacOS)
 type Manifest struct {
 	ManifestVersion string `protobuf:"bytes,1,opt,name=manifest_version,json=manifestVersion,proto3" json:"manifest_version,omitempty"`
 	// Key is composite key of the value's filter_profile and compliance_profile
