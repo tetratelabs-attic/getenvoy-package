@@ -46,6 +46,11 @@ message Flavor {
    map <string, Version> versions = 5;
 }
 
+
+enum Compliance {
+   FIPS_1402 = 0;
+}
+
 message Version {
    // This duplicated in order to make version easier to sort
    string name = 1;
@@ -57,31 +62,39 @@ message Build {
    string download_location_url = 2;
 }
 
+// Build maps 1:1 with Family
+// Family maps 1:m with Distribution
+// Distribution maps 1:m with Versions
+//
+//                     +-> xenial
+//         +-> UBUNTU -|
+//         |           +-> bionic
+// DEBIAN -|           
+//         |           +-> 7
+//         +-> DEBIAN -|
+//                     +-> 8
+//
+// Note: Distribution and version are considered metadata and should not be 
+// used as an exhaustive list or searched for via the CLI.
 message OperatingSystemFamily {
-   OperatingSystemFamilyName name = 1;
-   repeated OperatingSystem children = 2;
-}
+   enum Name {
+      DEBIAN = 0;
+      RHEL = 1;
+      DARWIN = 2;
+      WINDOWS = 3;
+   }
+   Name name = 1;
 
-message OperatingSystem {
-   OperatingSystemName name = 1;
-   repeated string versions = 2;
-}
-
-enum Compliance {
-   FIPS_1402 = 0;
-}
-
-enum OperatingSystemFamilyName {
-   DEBIAN_FAMILY = 0;
-   RHEL_FAMILY = 1;
-   DARWIN_FAMILY = 2;
-   WINDOWS_FAMILY = 3;
-}
-
-enum OperatingSystemName {
-   UBUNTU = 0;
-   DEBIAN = 1;
-   CENTOS = 2;
-   RHEL = 3;
-   MACOS = 4;
+   message Distribution {
+      enum Name {
+         UBUNTU = 0;
+         DEBIAN = 1;
+         CENTOS = 2;
+         RHEL = 3;
+         MACOS = 4;
+      }
+      Name name = 1;
+      repeated string versions = 2;
+   }
+   repeated Distribution children = 2;
 }
