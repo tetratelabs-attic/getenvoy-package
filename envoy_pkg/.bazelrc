@@ -16,7 +16,12 @@ import %workspace%/envoy/.bazelrc
 
 # GetEnvoy options
 build --strip=never --copt=-ggdb3
+build --action_env=BAZEL_COMPILER=clang
+build --action_env=CC=clang
+build --action_env=CXX=clang++
+
 build:release --compilation_mode=opt
+
 build:release-fips --config=release
 build:release-fips --define boringssl=fips
 
@@ -32,8 +37,6 @@ build:alpine --linkopt -static --linkopt=-lstdc++ --linkopt=-lm --linkopt -lexec
 build:alpine --linkopt -fuse-ld=gold
 
 build:centos --action_env=PATH=/opt/llvm/bin:/opt/rh/devtoolset-7/root/usr/bin:/opt/rh/rh-git218/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-build:centos --action_env=CC=clang
-build:centos --action_env=CXX=clang++
 build:centos --action_env=CXXFLAGS=-stdlib=libc++
 build:centos --action_env=BAZEL_CXXOPTS=-stdlib=libc++
 build:centos --action_env=BAZEL_LINKLIBS=-l%:libc++.a:-l%:libc++abi.a:-lm
@@ -41,8 +44,6 @@ build:centos --define force_libcpp=enabled
 
 build:ubuntu-xenial --action_env=PATH=/usr/lib/llvm-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 build:ubuntu-xenial --linkopt=-fuse-ld=lld
-build:ubuntu-xenial --action_env=CC=clang
-build:ubuntu-xenial --action_env=CXX=clang++
 
 # This is no-op but if this doesn't exist bazel will error with non-exist config
 build:darwin --announce_rc
