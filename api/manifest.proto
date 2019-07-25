@@ -64,15 +64,15 @@ message Build {
 
 // Build maps 1:1 with Family
 // Family maps 1:m with Distribution
-// Distribution maps 1:m with Versions
+// Distribution maps 1:1 with Version
 //
-//                     +-> xenial
-//         +-> UBUNTU -|
-//         |           +-> bionic
+//
+//         +-> UBUNTU -> 16.04+ LTS
+//         |
 // DEBIAN -|           
-//         |           +-> 7
-//         +-> DEBIAN -|
-//                     +-> 8
+//         |
+//         +-> DEBIAN -> 8+
+//
 //
 // Note: Distribution and version are considered metadata and should not be 
 // used as an exhaustive list or searched for via the CLI.
@@ -94,7 +94,7 @@ message OperatingSystemFamily {
          MACOS = 4;
       }
       Name name = 1;
-      repeated string versions = 2;
+      string versions = 2;
    }
    repeated Distribution children = 2;
 }
