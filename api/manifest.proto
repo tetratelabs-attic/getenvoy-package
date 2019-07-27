@@ -25,10 +25,7 @@ message Manifest {
 message Flavor {
    // Name is the composite key of the value's filter_profile and compliance
    // Format: filter_profile or filter_profile-compliance1-compliance2
-   //
-   // Examples:
-   //   - standard:1.11.1
-   //   - istio-fips1402:1.10.1
+   // Examples: standard, istio-fips1402
    string name = 1;
    
    // Filter profile is the name of the collection of filters

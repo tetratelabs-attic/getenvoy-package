@@ -116,10 +116,7 @@ func (m *Manifest) GetFlavors() map[string]*Flavor {
 type Flavor struct {
 	// Name is the composite key of the value's filter_profile and compliance
 	// Format: filter_profile or filter_profile-compliance1-compliance2
-	//
-	// Examples:
-	//   - standard:1.11.1
-	//   - istio-fips1402:1.10.1
+	// Examples: standard, istio-fips1402
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Filter profile is the name of the collection of filters
 	// Examples: standard, istio, minimal
