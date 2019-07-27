@@ -34,103 +34,40 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type Compliance int32
+type Build_Platform int32
 
 const (
-	Compliance_FIPS_1402 Compliance = 0
+	Build_LINUX_GLIBC_2_17 Build_Platform = 0
+	Build_LINUX_GLIBC_2_18 Build_Platform = 1
+	Build_DARWIN           Build_Platform = 2
+	Build_WINDOWS          Build_Platform = 3
 )
 
-var Compliance_name = map[int32]string{
-	0: "FIPS_1402",
-}
-
-var Compliance_value = map[string]int32{
-	"FIPS_1402": 0,
-}
-
-func (x Compliance) String() string {
-	return proto.EnumName(Compliance_name, int32(x))
-}
-
-func (Compliance) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_346685e380de5b1f, []int{0}
-}
-
-type OperatingSystemFamily_Name int32
-
-const (
-	OperatingSystemFamily_DEBIAN  OperatingSystemFamily_Name = 0
-	OperatingSystemFamily_RHEL    OperatingSystemFamily_Name = 1
-	OperatingSystemFamily_DARWIN  OperatingSystemFamily_Name = 2
-	OperatingSystemFamily_WINDOWS OperatingSystemFamily_Name = 3
-)
-
-var OperatingSystemFamily_Name_name = map[int32]string{
-	0: "DEBIAN",
-	1: "RHEL",
+var Build_Platform_name = map[int32]string{
+	0: "LINUX_GLIBC_2_17",
+	1: "LINUX_GLIBC_2_18",
 	2: "DARWIN",
 	3: "WINDOWS",
 }
 
-var OperatingSystemFamily_Name_value = map[string]int32{
-	"DEBIAN":  0,
-	"RHEL":    1,
-	"DARWIN":  2,
-	"WINDOWS": 3,
+var Build_Platform_value = map[string]int32{
+	"LINUX_GLIBC_2_17": 0,
+	"LINUX_GLIBC_2_18": 1,
+	"DARWIN":           2,
+	"WINDOWS":          3,
 }
 
-func (x OperatingSystemFamily_Name) String() string {
-	return proto.EnumName(OperatingSystemFamily_Name_name, int32(x))
+func (x Build_Platform) String() string {
+	return proto.EnumName(Build_Platform_name, int32(x))
 }
 
-func (OperatingSystemFamily_Name) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_346685e380de5b1f, []int{4, 0}
+func (Build_Platform) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_346685e380de5b1f, []int{3, 0}
 }
 
-type OperatingSystemFamily_Distribution_Name int32
-
-const (
-	OperatingSystemFamily_Distribution_UBUNTU OperatingSystemFamily_Distribution_Name = 0
-	OperatingSystemFamily_Distribution_DEBIAN OperatingSystemFamily_Distribution_Name = 1
-	OperatingSystemFamily_Distribution_CENTOS OperatingSystemFamily_Distribution_Name = 2
-	OperatingSystemFamily_Distribution_RHEL   OperatingSystemFamily_Distribution_Name = 3
-	OperatingSystemFamily_Distribution_MACOS  OperatingSystemFamily_Distribution_Name = 4
-)
-
-var OperatingSystemFamily_Distribution_Name_name = map[int32]string{
-	0: "UBUNTU",
-	1: "DEBIAN",
-	2: "CENTOS",
-	3: "RHEL",
-	4: "MACOS",
-}
-
-var OperatingSystemFamily_Distribution_Name_value = map[string]int32{
-	"UBUNTU": 0,
-	"DEBIAN": 1,
-	"CENTOS": 2,
-	"RHEL":   3,
-	"MACOS":  4,
-}
-
-func (x OperatingSystemFamily_Distribution_Name) String() string {
-	return proto.EnumName(OperatingSystemFamily_Distribution_Name_name, int32(x))
-}
-
-func (OperatingSystemFamily_Distribution_Name) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_346685e380de5b1f, []int{4, 0, 0}
-}
-
-// Builds must be uniquely addressable from the top level so that they can be used to look up the location of binaries.
-// Format: filter_profile(-compliance_profile):envoy_version/operating_system_family
-// Examples:
-//   - istio-fips1402:1.10.1/debian (for Ubuntu & Debian)
-//   - standard:1.11.1/darwin (for MacOS)
 type Manifest struct {
 	ManifestVersion string `protobuf:"bytes,1,opt,name=manifest_version,json=manifestVersion,proto3" json:"manifest_version,omitempty"`
-	// Key is composite key of the value's filter_profile and compliance_profile
-	// Note: compliance_profile is optional
-	// Format: filter_profile(-compliance_profile)
+	// Key is the flavor name
 	Flavors              map[string]*Flavor `protobuf:"bytes,2,rep,name=flavors,proto3" json:"flavors,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
@@ -177,15 +114,21 @@ func (m *Manifest) GetFlavors() map[string]*Flavor {
 }
 
 type Flavor struct {
-	// This is duplicated in order to make flavor easier to sort
+	// Name is the composite key of the value's filter_profile and compliance
+	// Format: filter_profile or filter_profile-compliance1-compliance2
+	//
+	// Examples:
+	//   - standard:1.11.1
+	//   - istio-fips1402:1.10.1
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Filter profile is the name of the collection of filters
-	// E.g. standard, minimal, istio
+	// Examples: standard, istio, minimal
 	FilterProfile string `protobuf:"bytes,2,opt,name=filter_profile,json=filterProfile,proto3" json:"filter_profile,omitempty"`
 	// All filters available in this flavor
-	Filters     []string     `protobuf:"bytes,3,rep,name=filters,proto3" json:"filters,omitempty"`
-	Compliances []Compliance `protobuf:"varint,4,rep,packed,name=compliances,proto3,enum=api.Compliance" json:"compliances,omitempty"`
-	// Key is Envoy version
+	Filters []string `protobuf:"bytes,3,rep,name=filters,proto3" json:"filters,omitempty"`
+	// Compliance requirements met by this flavor
+	Compliances []string `protobuf:"bytes,4,rep,name=compliances,proto3" json:"compliances,omitempty"`
+	// Key is the version's name
 	Versions             map[string]*Version `protobuf:"bytes,5,rep,name=versions,proto3" json:"versions,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
@@ -238,7 +181,7 @@ func (m *Flavor) GetFilters() []string {
 	return nil
 }
 
-func (m *Flavor) GetCompliances() []Compliance {
+func (m *Flavor) GetCompliances() []string {
 	if m != nil {
 		return m.Compliances
 	}
@@ -253,12 +196,14 @@ func (m *Flavor) GetVersions() map[string]*Version {
 }
 
 type Version struct {
-	// This duplicated in order to make version easier to sort
-	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Builds               []*Build `protobuf:"bytes,2,rep,name=builds,proto3" json:"builds,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	// Name is the Envoy version
+	// Examples: 1.10.0, 1.11.0, nightly
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Key is the build's platform
+	Builds               map[string]*Build `protobuf:"bytes,5,rep,name=builds,proto3" json:"builds,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
 func (m *Version) Reset()         { *m = Version{} }
@@ -293,7 +238,7 @@ func (m *Version) GetName() string {
 	return ""
 }
 
-func (m *Version) GetBuilds() []*Build {
+func (m *Version) GetBuilds() map[string]*Build {
 	if m != nil {
 		return m.Builds
 	}
@@ -301,11 +246,11 @@ func (m *Version) GetBuilds() []*Build {
 }
 
 type Build struct {
-	OperatingSystemFamily *OperatingSystemFamily `protobuf:"bytes,1,opt,name=operating_system_family,json=operatingSystemFamily,proto3" json:"operating_system_family,omitempty"`
-	DownloadLocationUrl   string                 `protobuf:"bytes,2,opt,name=download_location_url,json=downloadLocationUrl,proto3" json:"download_location_url,omitempty"`
-	XXX_NoUnkeyedLiteral  struct{}               `json:"-"`
-	XXX_unrecognized      []byte                 `json:"-"`
-	XXX_sizecache         int32                  `json:"-"`
+	Platform             Build_Platform `protobuf:"varint,1,opt,name=platform,proto3,enum=api.Build_Platform" json:"platform,omitempty"`
+	DownloadLocationUrl  string         `protobuf:"bytes,2,opt,name=download_location_url,json=downloadLocationUrl,proto3" json:"download_location_url,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
 }
 
 func (m *Build) Reset()         { *m = Build{} }
@@ -333,11 +278,11 @@ func (m *Build) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Build proto.InternalMessageInfo
 
-func (m *Build) GetOperatingSystemFamily() *OperatingSystemFamily {
+func (m *Build) GetPlatform() Build_Platform {
 	if m != nil {
-		return m.OperatingSystemFamily
+		return m.Platform
 	}
-	return nil
+	return Build_LINUX_GLIBC_2_17
 }
 
 func (m *Build) GetDownloadLocationUrl() string {
@@ -347,166 +292,47 @@ func (m *Build) GetDownloadLocationUrl() string {
 	return ""
 }
 
-// Build maps 1:1 with Family
-// Family maps 1:m with Distribution
-// Distribution maps 1:1 with Version
-//
-//
-//         +-> UBUNTU -> 16.04+ LTS
-//         |
-// DEBIAN -|
-//         |
-//         +-> DEBIAN -> 8+
-//
-//
-// Note: Distribution and version are considered metadata and should not be
-// used as an exhaustive list or searched for via the CLI.
-type OperatingSystemFamily struct {
-	Name                 OperatingSystemFamily_Name            `protobuf:"varint,1,opt,name=name,proto3,enum=api.OperatingSystemFamily_Name" json:"name,omitempty"`
-	Children             []*OperatingSystemFamily_Distribution `protobuf:"bytes,2,rep,name=children,proto3" json:"children,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
-	XXX_unrecognized     []byte                                `json:"-"`
-	XXX_sizecache        int32                                 `json:"-"`
-}
-
-func (m *OperatingSystemFamily) Reset()         { *m = OperatingSystemFamily{} }
-func (m *OperatingSystemFamily) String() string { return proto.CompactTextString(m) }
-func (*OperatingSystemFamily) ProtoMessage()    {}
-func (*OperatingSystemFamily) Descriptor() ([]byte, []int) {
-	return fileDescriptor_346685e380de5b1f, []int{4}
-}
-
-func (m *OperatingSystemFamily) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_OperatingSystemFamily.Unmarshal(m, b)
-}
-func (m *OperatingSystemFamily) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_OperatingSystemFamily.Marshal(b, m, deterministic)
-}
-func (m *OperatingSystemFamily) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OperatingSystemFamily.Merge(m, src)
-}
-func (m *OperatingSystemFamily) XXX_Size() int {
-	return xxx_messageInfo_OperatingSystemFamily.Size(m)
-}
-func (m *OperatingSystemFamily) XXX_DiscardUnknown() {
-	xxx_messageInfo_OperatingSystemFamily.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_OperatingSystemFamily proto.InternalMessageInfo
-
-func (m *OperatingSystemFamily) GetName() OperatingSystemFamily_Name {
-	if m != nil {
-		return m.Name
-	}
-	return OperatingSystemFamily_DEBIAN
-}
-
-func (m *OperatingSystemFamily) GetChildren() []*OperatingSystemFamily_Distribution {
-	if m != nil {
-		return m.Children
-	}
-	return nil
-}
-
-type OperatingSystemFamily_Distribution struct {
-	Name                 OperatingSystemFamily_Distribution_Name `protobuf:"varint,1,opt,name=name,proto3,enum=api.OperatingSystemFamily_Distribution_Name" json:"name,omitempty"`
-	Versions             string                                  `protobuf:"bytes,2,opt,name=versions,proto3" json:"versions,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                                `json:"-"`
-	XXX_unrecognized     []byte                                  `json:"-"`
-	XXX_sizecache        int32                                   `json:"-"`
-}
-
-func (m *OperatingSystemFamily_Distribution) Reset()         { *m = OperatingSystemFamily_Distribution{} }
-func (m *OperatingSystemFamily_Distribution) String() string { return proto.CompactTextString(m) }
-func (*OperatingSystemFamily_Distribution) ProtoMessage()    {}
-func (*OperatingSystemFamily_Distribution) Descriptor() ([]byte, []int) {
-	return fileDescriptor_346685e380de5b1f, []int{4, 0}
-}
-
-func (m *OperatingSystemFamily_Distribution) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_OperatingSystemFamily_Distribution.Unmarshal(m, b)
-}
-func (m *OperatingSystemFamily_Distribution) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_OperatingSystemFamily_Distribution.Marshal(b, m, deterministic)
-}
-func (m *OperatingSystemFamily_Distribution) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OperatingSystemFamily_Distribution.Merge(m, src)
-}
-func (m *OperatingSystemFamily_Distribution) XXX_Size() int {
-	return xxx_messageInfo_OperatingSystemFamily_Distribution.Size(m)
-}
-func (m *OperatingSystemFamily_Distribution) XXX_DiscardUnknown() {
-	xxx_messageInfo_OperatingSystemFamily_Distribution.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_OperatingSystemFamily_Distribution proto.InternalMessageInfo
-
-func (m *OperatingSystemFamily_Distribution) GetName() OperatingSystemFamily_Distribution_Name {
-	if m != nil {
-		return m.Name
-	}
-	return OperatingSystemFamily_Distribution_UBUNTU
-}
-
-func (m *OperatingSystemFamily_Distribution) GetVersions() string {
-	if m != nil {
-		return m.Versions
-	}
-	return ""
-}
-
 func init() {
-	proto.RegisterEnum("api.Compliance", Compliance_name, Compliance_value)
-	proto.RegisterEnum("api.OperatingSystemFamily_Name", OperatingSystemFamily_Name_name, OperatingSystemFamily_Name_value)
-	proto.RegisterEnum("api.OperatingSystemFamily_Distribution_Name", OperatingSystemFamily_Distribution_Name_name, OperatingSystemFamily_Distribution_Name_value)
+	proto.RegisterEnum("api.Build_Platform", Build_Platform_name, Build_Platform_value)
 	proto.RegisterType((*Manifest)(nil), "api.Manifest")
 	proto.RegisterMapType((map[string]*Flavor)(nil), "api.Manifest.FlavorsEntry")
 	proto.RegisterType((*Flavor)(nil), "api.Flavor")
 	proto.RegisterMapType((map[string]*Version)(nil), "api.Flavor.VersionsEntry")
 	proto.RegisterType((*Version)(nil), "api.Version")
+	proto.RegisterMapType((map[string]*Build)(nil), "api.Version.BuildsEntry")
 	proto.RegisterType((*Build)(nil), "api.Build")
-	proto.RegisterType((*OperatingSystemFamily)(nil), "api.OperatingSystemFamily")
-	proto.RegisterType((*OperatingSystemFamily_Distribution)(nil), "api.OperatingSystemFamily.Distribution")
 }
 
 func init() { proto.RegisterFile("api/manifest.proto", fileDescriptor_346685e380de5b1f) }
 
 var fileDescriptor_346685e380de5b1f = []byte{
-	// 570 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0x5f, 0x8b, 0xd3, 0x4e,
-	0x14, 0xdd, 0x24, 0xfd, 0x7b, 0xbb, 0xed, 0x86, 0xf9, 0x51, 0x7e, 0xb1, 0x3e, 0x58, 0x03, 0x62,
-	0x15, 0x89, 0x6e, 0x76, 0x17, 0xc4, 0x17, 0xed, 0x5f, 0x2d, 0xec, 0xa6, 0xcb, 0x74, 0x6b, 0x1f,
-	0xc3, 0xb4, 0x4d, 0x75, 0x70, 0x92, 0x09, 0x49, 0x5a, 0xe9, 0xa7, 0x10, 0xfc, 0x1e, 0xbe, 0xf9,
-	0xe1, 0x7c, 0x94, 0x24, 0x93, 0x6e, 0x0a, 0x55, 0x7c, 0xbb, 0x73, 0xce, 0xb9, 0x67, 0x6e, 0xce,
-	0x1d, 0x02, 0x88, 0xf8, 0xf4, 0xa5, 0x4b, 0x3c, 0xba, 0x76, 0xc2, 0xc8, 0xf0, 0x03, 0x1e, 0x71,
-	0xa4, 0x10, 0x9f, 0xea, 0x3f, 0x25, 0xa8, 0xdc, 0x08, 0x1c, 0x3d, 0x03, 0x35, 0xd3, 0xd8, 0x5b,
-	0x27, 0x08, 0x29, 0xf7, 0x34, 0xa9, 0x2d, 0x75, 0xaa, 0xf8, 0x2c, 0xc3, 0x3f, 0xa6, 0x30, 0xba,
-	0x84, 0xf2, 0x9a, 0x91, 0x2d, 0x0f, 0x42, 0x4d, 0x6e, 0x2b, 0x9d, 0x9a, 0xd9, 0x32, 0x88, 0x4f,
-	0x8d, 0xcc, 0xca, 0x18, 0xa5, 0xe4, 0xd0, 0x8b, 0x82, 0x1d, 0xce, 0xa4, 0xad, 0xf7, 0x70, 0x9a,
-	0x27, 0x90, 0x0a, 0xca, 0x17, 0x67, 0x27, 0xee, 0x88, 0x4b, 0xf4, 0x18, 0x8a, 0x5b, 0xc2, 0x36,
-	0x8e, 0x26, 0xb7, 0xa5, 0x4e, 0xcd, 0xac, 0x25, 0xae, 0x69, 0x0f, 0x4e, 0x99, 0x37, 0xf2, 0x6b,
-	0x49, 0xff, 0x2e, 0x43, 0x29, 0x45, 0x11, 0x82, 0x82, 0x47, 0x5c, 0x47, 0x98, 0x24, 0x35, 0x7a,
-	0x02, 0x8d, 0x35, 0x65, 0x91, 0x13, 0xd8, 0x7e, 0xc0, 0xd7, 0x94, 0xa5, 0x76, 0x55, 0x5c, 0x4f,
-	0xd1, 0xdb, 0x14, 0x44, 0x1a, 0x94, 0x53, 0x20, 0xd4, 0x94, 0xb6, 0xd2, 0xa9, 0xe2, 0xec, 0x88,
-	0xce, 0xa1, 0xb6, 0xe4, 0xae, 0xcf, 0x28, 0xf1, 0x96, 0x4e, 0xa8, 0x15, 0xda, 0x4a, 0xa7, 0x61,
-	0x9e, 0x25, 0xc3, 0xf4, 0xf7, 0x38, 0xce, 0x6b, 0xd0, 0x15, 0x54, 0x44, 0x66, 0xa1, 0x56, 0x4c,
-	0x22, 0x79, 0x90, 0x1b, 0xde, 0x10, 0xc1, 0x89, 0x44, 0xf6, 0xd2, 0xd6, 0x18, 0xea, 0x07, 0xd4,
-	0x91, 0x4c, 0xf4, 0xc3, 0x4c, 0x4e, 0x13, 0x5b, 0xd1, 0x94, 0x0f, 0xa5, 0x0b, 0xe5, 0x6c, 0x3d,
-	0xc7, 0x42, 0xd1, 0xa1, 0xb4, 0xd8, 0x50, 0xb6, 0xca, 0x36, 0x06, 0x89, 0x4f, 0x2f, 0x86, 0xb0,
-	0x60, 0xf4, 0x6f, 0x12, 0x14, 0x13, 0x04, 0x61, 0xf8, 0x9f, 0xfb, 0x4e, 0x40, 0x22, 0xea, 0x7d,
-	0xb2, 0xc3, 0x5d, 0x18, 0x39, 0xae, 0xbd, 0x26, 0x2e, 0x65, 0xe9, 0x68, 0xd9, 0xc2, 0x27, 0x99,
-	0x66, 0x9a, 0x48, 0x46, 0x89, 0x02, 0x37, 0xf9, 0x31, 0x18, 0x99, 0xd0, 0x5c, 0xf1, 0xaf, 0x1e,
-	0xe3, 0x64, 0x65, 0x33, 0xbe, 0x24, 0x11, 0xe5, 0x9e, 0xbd, 0x09, 0x98, 0xd8, 0xce, 0x7f, 0x19,
-	0x79, 0x2d, 0xb8, 0x59, 0xc0, 0xf4, 0x5f, 0x32, 0x34, 0x8f, 0x5e, 0x82, 0x2e, 0x72, 0xdf, 0xd8,
-	0x30, 0x1f, 0xfd, 0x79, 0x1c, 0xc3, 0x22, 0xae, 0x23, 0x42, 0xe8, 0x43, 0x65, 0xf9, 0x99, 0xb2,
-	0x55, 0xe0, 0x78, 0x22, 0x86, 0xa7, 0x7f, 0x69, 0x1c, 0xd0, 0x30, 0x0a, 0xe8, 0x62, 0x13, 0x0f,
-	0x83, 0xf7, 0x8d, 0xad, 0x1f, 0x12, 0x9c, 0xe6, 0x29, 0xf4, 0xee, 0x60, 0x94, 0x17, 0xff, 0xe8,
-	0x98, 0x9f, 0xab, 0x95, 0x7b, 0x3d, 0x69, 0x1a, 0xfb, 0xb3, 0xfe, 0x16, 0x0a, 0xb1, 0x12, 0x01,
-	0x94, 0x66, 0xbd, 0x99, 0x75, 0x37, 0x53, 0x4f, 0xe2, 0x7a, 0x30, 0xec, 0x8d, 0xbb, 0x96, 0x2a,
-	0xc5, 0x75, 0x7f, 0x68, 0xdd, 0x4d, 0xa6, 0xaa, 0x8c, 0x2a, 0x50, 0xc0, 0x1f, 0x86, 0xd7, 0xaa,
-	0x82, 0xaa, 0x50, 0xbc, 0xe9, 0xf6, 0x27, 0x53, 0xb5, 0xa0, 0x5f, 0xdd, 0x1b, 0x88, 0xa6, 0x93,
-	0xbd, 0x30, 0x69, 0x1f, 0x74, 0xf1, 0x7c, 0x6c, 0xa9, 0x32, 0xaa, 0x41, 0x79, 0x3e, 0xb6, 0x06,
-	0x93, 0xf9, 0x54, 0x55, 0x9e, 0x3f, 0x04, 0xb8, 0x7f, 0xec, 0xa8, 0x0e, 0xd5, 0xd1, 0xf8, 0x76,
-	0x6a, 0x9f, 0x5f, 0xbe, 0x32, 0xd5, 0x93, 0x45, 0x29, 0xf9, 0x89, 0x5c, 0xfc, 0x0e, 0x00, 0x00,
-	0xff, 0xff, 0xfe, 0x74, 0x66, 0x4f, 0x5a, 0x04, 0x00, 0x00,
+	// 442 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x93, 0xcd, 0x6e, 0xd3, 0x40,
+	0x14, 0x85, 0xb1, 0xdd, 0xfc, 0x5d, 0xb7, 0xc5, 0xba, 0x05, 0x69, 0xc8, 0xca, 0x44, 0x42, 0x0a,
+	0x1b, 0x17, 0x0c, 0x88, 0x8a, 0x1d, 0xa5, 0xa5, 0xb2, 0x14, 0xd2, 0xca, 0xa8, 0x84, 0x9d, 0x35,
+	0x4d, 0x6c, 0x69, 0xc4, 0xc4, 0x63, 0x8d, 0x9d, 0xa0, 0x2e, 0x79, 0x09, 0x9e, 0x84, 0x2d, 0xef,
+	0x86, 0x98, 0x9f, 0xd4, 0x91, 0xbc, 0x1b, 0x7f, 0xe7, 0xde, 0xe3, 0xa3, 0x33, 0x1a, 0x40, 0x5a,
+	0xb1, 0xd3, 0x35, 0x2d, 0x59, 0x91, 0xd7, 0x4d, 0x54, 0x49, 0xd1, 0x08, 0xf4, 0x68, 0xc5, 0x26,
+	0x7f, 0x1c, 0x18, 0x7e, 0x31, 0x1c, 0x5f, 0x42, 0x60, 0x67, 0xb2, 0x6d, 0x2e, 0x6b, 0x26, 0x4a,
+	0xe2, 0x84, 0xce, 0x74, 0x94, 0x3e, 0xb6, 0xfc, 0x9b, 0xc6, 0xf8, 0x16, 0x06, 0x05, 0xa7, 0x5b,
+	0x21, 0x6b, 0xe2, 0x86, 0xde, 0xd4, 0x8f, 0xc7, 0x11, 0xad, 0x58, 0x64, 0xad, 0xa2, 0xcf, 0x5a,
+	0xbc, 0x2c, 0x1b, 0x79, 0x9f, 0xda, 0xd1, 0xf1, 0x15, 0x1c, 0xb6, 0x05, 0x0c, 0xc0, 0xfb, 0x91,
+	0xdf, 0x9b, 0x7f, 0xfc, 0x3f, 0xe2, 0x73, 0xe8, 0x6d, 0x29, 0xdf, 0xe4, 0xc4, 0x0d, 0x9d, 0xa9,
+	0x1f, 0xfb, 0xca, 0x55, 0xef, 0xa4, 0x5a, 0xf9, 0xe0, 0x9e, 0x39, 0x93, 0x5f, 0x2e, 0xf4, 0x35,
+	0x45, 0x84, 0x83, 0x92, 0xae, 0x73, 0x63, 0xa2, 0xce, 0xf8, 0x02, 0x8e, 0x0b, 0xc6, 0x9b, 0x5c,
+	0x66, 0x95, 0x14, 0x05, 0xe3, 0xda, 0x6e, 0x94, 0x1e, 0x69, 0x7a, 0xa3, 0x21, 0x12, 0x18, 0x68,
+	0x50, 0x13, 0x2f, 0xf4, 0xa6, 0xa3, 0xd4, 0x7e, 0x62, 0x08, 0xfe, 0x52, 0xac, 0x2b, 0xce, 0x68,
+	0xb9, 0xcc, 0x6b, 0x72, 0xa0, 0xd4, 0x36, 0xc2, 0x77, 0x30, 0x34, 0x15, 0xd5, 0xa4, 0xa7, 0x1a,
+	0x78, 0xd6, 0xca, 0x1a, 0x99, 0x9e, 0x4c, 0x01, 0xbb, 0xd1, 0x71, 0x02, 0x47, 0x7b, 0x52, 0x47,
+	0x05, 0x93, 0xfd, 0x0a, 0x0e, 0x95, 0xad, 0x59, 0x6a, 0x77, 0xf0, 0xdb, 0x81, 0x81, 0xbd, 0x8e,
+	0xae, 0x12, 0x5e, 0x41, 0xff, 0x6e, 0xc3, 0xf8, 0xca, 0xe6, 0x23, 0x6d, 0xa3, 0xe8, 0x5c, 0x49,
+	0x3a, 0x9e, 0x99, 0x1b, 0x5f, 0x82, 0xdf, 0xc2, 0x1d, 0xd1, 0xc2, 0xfd, 0x68, 0xa0, 0x1c, 0xd5,
+	0x4a, 0x3b, 0xd8, 0x5f, 0x07, 0x7a, 0x0a, 0xe2, 0x29, 0x0c, 0x2b, 0x4e, 0x9b, 0x42, 0xc8, 0xb5,
+	0xb2, 0x39, 0x8e, 0x4f, 0x1e, 0x56, 0xa2, 0x1b, 0x23, 0xa5, 0xbb, 0x21, 0x8c, 0xe1, 0xe9, 0x4a,
+	0xfc, 0x2c, 0xb9, 0xa0, 0xab, 0x8c, 0x8b, 0x25, 0x6d, 0x98, 0x28, 0xb3, 0x8d, 0xe4, 0xe6, 0xfe,
+	0x4e, 0xac, 0x38, 0x33, 0xda, 0xad, 0xe4, 0x93, 0x6b, 0x18, 0x5a, 0x27, 0x7c, 0x02, 0xc1, 0x2c,
+	0x99, 0xdf, 0x7e, 0xcf, 0xae, 0x66, 0xc9, 0xf9, 0xa7, 0x2c, 0xce, 0x5e, 0xbf, 0x0f, 0x1e, 0x75,
+	0xd0, 0xb3, 0xc0, 0x41, 0x80, 0xfe, 0xc5, 0xc7, 0x74, 0x91, 0xcc, 0x03, 0x17, 0x7d, 0x18, 0x2c,
+	0x92, 0xf9, 0xc5, 0xf5, 0xe2, 0x6b, 0xe0, 0xdd, 0xf5, 0xd5, 0xfb, 0x78, 0xf3, 0x2f, 0x00, 0x00,
+	0xff, 0xff, 0x16, 0x68, 0xcc, 0xf2, 0x35, 0x03, 0x00, 0x00,
 }
