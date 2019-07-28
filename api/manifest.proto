@@ -36,10 +36,15 @@ message Flavor {
    repeated string filters = 3;
 
    // Compliance requirements met by this flavor
-   repeated string compliances = 4;
+   repeated Compliance compliances = 4;
   
    // Key is the version's name 
    map <string, Version> versions = 5;
+}
+
+// Compliances should be single word, no underscores
+enum Compliance {
+   FIPS1402 = 0;
 }
 
 message Version {
@@ -52,11 +57,13 @@ message Version {
 }
 
 message Build {
+   // Default must be unknown in order to sort correctly
    enum Platform {
-      LINUX_GLIBC_2_17 = 0;
-      LINUX_GLIBC_2_18 = 1;
-      DARWIN = 2;
-      WINDOWS = 3;
+      UNKNOWN = 0;
+      DARWIN = 1;
+      WINDOWS = 2;
+      LINUX_GLIBC_2_17 = 3;
+      LINUX_GLIBC_2_18 = 4;
    }
 
    Platform platform = 1;
