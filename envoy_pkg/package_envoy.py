@@ -160,14 +160,30 @@ def envoyCommitterDate():
 
 
 def setUpWorkspace(variant):
-    shutil.copyfile('envoy/WORKSPACE', 'WORKSPACE')
+    if os.path.isfile('envoy/ci/WORKSPACE.filter.example'):
+        workspace_content = ""
+        with open('envoy/ci/WORKSPACE.filter.example') as workspace:
+            workspace_content = workspace.read()
+        if "{ENVOY_SRCDIR}" in workspace_content:
+            workspace_content = workspace_content.replace(
+                '{ENVOY_SRCDIR}', 'envoy')
+        elif '"/source"' in workspace_content:
+            workspace_content = workspace_content.replace(
+                '"/source"', '"envoy"')
+        else:
+            raise "Failed to setup workspace"
 
-    for p in reversed(
-            sorted(glob.glob("workspace_patches/" + variant + "/*.patch"))):
-        if subprocess.call(['patch', '-p1', 'WORKSPACE', p]) == 0:
-            break
+        with open('WORKSPACE', 'w') as workspace:
+            workspace.write(workspace_content)
     else:
-        raise "Failed to setup workspace"
+        shutil.copyfile('envoy/WORKSPACE', 'WORKSPACE')
+
+        patches = glob.glob("workspace_patches/" + variant + "/*.patch")
+        for p in reversed(sorted(patches)):
+            if subprocess.call(['patch', '-p1', 'WORKSPACE', p]) == 0:
+                break
+        else:
+            raise "Failed to setup workspace"
 
     with open('WORKSPACE', 'a+') as workspace:
         with open('WORKSPACE.containers') as append:
