@@ -62,8 +62,7 @@ message Build {
       UNKNOWN = 0;
       DARWIN = 1;
       WINDOWS = 2;
-      LINUX_GLIBC_2_17 = 3;
-      LINUX_GLIBC_2_18 = 4;
+      LINUX_GLIBC = 3;
    }
 
    Platform platform = 1;
