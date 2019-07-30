@@ -15,65 +15,56 @@
 syntax = "proto3";
 package api;
 
-// Builds must be uniquely addressable from the top level so that they can be used to look up the location of binaries.
-// Format: filter_profile(-compliance_profile):envoy_version/operating_system-operating_system_version
-// Examples:
-//   - istio-fips1402:1.10.1/ubuntu-16.04
-//   - standard:nightly/debian-8
 message Manifest {
    string manifest_version = 1;
 
-   // Key is composite key of the value's filter_profile and compliance_profile
-   // Note: compliance_profile is optional
-   // Format: filter_profile(-compliance_profile)
+   // Key is the flavor name
    map<string, Flavor> flavors = 2;
 }
 
 message Flavor {
-   // This is duplicated in order to make flavor easier to sort
+   // Name is the composite key of the value's filter_profile and compliance
+   // Format: filter_profile or filter_profile-compliance1-compliance2
+   // Examples: standard, istio-fips1402
    string name = 1;
    
    // Filter profile is the name of the collection of filters
-   // E.g. standard, minimal, istio
+   // Examples: standard, istio, minimal
    string filter_profile = 2;
 
    // All filters available in this flavor
    repeated string filters = 3;
-  
+
+   // Compliance requirements met by this flavor
    repeated Compliance compliances = 4;
   
-   // Key is Envoy version
+   // Key is the version's name 
    map <string, Version> versions = 5;
 }
 
-message Version {
-   // This duplicated in order to make version easier to sort
-   string name = 1;
-   // Key is operating system
-   // Note: Keys in proto maps cannot be enums, so this has to be a string.
-   map <string, OperatingSystem> operating_systems = 2; 
+// Compliances should be single word, no underscores
+enum Compliance {
+   FIPS1402 = 0;
 }
 
-message OperatingSystem {
-   // Matches the key, duplicated here to be explicit.
-   OperatingSystemName name = 1;
-   
-   repeated Build builds = 2;
+message Version {
+   // Name is the Envoy version
+   // Examples: 1.10.0, 1.11.0, nightly
+   string name = 1;
+
+   // Key is the build's platform 
+   map <string, Build> builds = 5;
 }
 
 message Build {
-   repeated string operating_system_versions = 1;
+   // Default must be unknown in order to sort correctly
+   enum Platform {
+      UNKNOWN = 0;
+      DARWIN = 1;
+      WINDOWS = 2;
+      LINUX_GLIBC = 3;
+   }
+
+   Platform platform = 1;
    string download_location_url = 2;
-}
-
-enum Compliance {
-   FIPS_1402 = 0;
-}
-
-enum OperatingSystemName {
-   UBUNTU = 0;
-   DEBIAN = 1;
-   CENTOS = 2;
-   RHEL = 3;
-   MACOS = 4;
 }
