@@ -19,6 +19,7 @@ IMAGE =  gcr.io/getenvoy-package/rbe-$(DISTRO)
 TAG = $(IMAGE):$(SHA)
 
 $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build.tar: build_container Dockerfile.rbe
+	mkdir -p $(OUTPUT_DIR)/$(DISTRO)
 	docker build . -t $(TAG) -f Dockerfile.rbe
 	docker save $(TAG) -o $@
 
