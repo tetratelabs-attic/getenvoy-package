@@ -40,6 +40,11 @@ steps:
   name: make
   args: ['ubuntu-xenial']
 
+- id: rbe-linux-glibc
+  waitFor: ['common']
+  name: make
+  args: ['linux-glibc']
+
 - name: gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
   waitFor: ['build-alpine']
   dir: ../envoy_pkg
@@ -68,6 +73,7 @@ images:
   - gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
   - gcr.io/getenvoy-package/build-centos:$_GIT_SHA
   - gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
+  - gcr.io/getenvoy-package/rbe-linux-glibc:$_GIT_SHA
 options:
   workerPool: 'getenvoy-package/envoy-build'
   env:
