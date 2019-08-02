@@ -14,7 +14,7 @@
 
 FROM centos:7
 
-COPY build_container/ /build_container
+COPY build_container/getenvoy_linux_glibc_rbe.sh /build_container/getenvoy_linux_glibc_rbe.sh
 
 WORKDIR /build_container
-RUN ./getenvoy_linux_glibc.sh
+RUN ./getenvoy_linux_glibc_rbe.sh

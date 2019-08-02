@@ -69,11 +69,29 @@ steps:
   env:
   - 'ENVOY_DIST=ubuntu-xenial'
 
+- name: gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
+  waitFor: ['rbe-linux-glibc']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--test_package', '--test_distroless']
+  env:
+  - 'ENVOY_DIST=linux-glibc'
+
+- name: gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
+  waitFor: ['rbe-linux-glibc']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--build_deb_package', '--build_rpm_package', '--build-distroless-docker']
+  env:
+  - 'ENVOY_DIST=linux-glibc'
+
+
 images:
   - gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
   - gcr.io/getenvoy-package/build-centos:$_GIT_SHA
   - gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
   - gcr.io/getenvoy-package/rbe-linux-glibc:$_GIT_SHA
+  - gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
 options:
   workerPool: 'getenvoy-package/envoy-build'
   env:

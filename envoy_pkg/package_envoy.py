@@ -166,7 +166,8 @@ def setUpWorkspace(variant):
             workspace_content = workspace.read()
         if "{ENVOY_SRCDIR}" in workspace_content:
             workspace_content = workspace_content.replace(
-                '{ENVOY_SRCDIR}', 'envoy')
+                '{ENVOY_SRCDIR}', 'envoy').replace('"envoy_filter_example"',
+                                                   '"envoy_pkg"')
         elif '"/source"' in workspace_content:
             workspace_content = workspace_content.replace(
                 '"/source"', '"envoy"')
@@ -186,8 +187,13 @@ def setUpWorkspace(variant):
             raise "Failed to setup workspace"
 
     with open('WORKSPACE', 'a+') as workspace:
-        with open('WORKSPACE.containers') as append:
-            workspace.write(append.read())
+        with open('getenvoy.WORKSPACE') as append:
+            workspace.write(append.read().replace(
+                '{RBE_IMAGE_DIGEST}',
+                os.environ.get(
+                    'RBE_IMAGE_DIGEST',
+                    'sha256:17a9702b9c29f6e244c415b67fc43c43ec432a9e602b412e5efc9b9e25f2bff7'
+                )))
 
     writeSourceInfo()
 

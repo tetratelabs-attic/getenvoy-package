@@ -12,22 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-exports_files([
-    "envoy_test_wrapper",
-])
+FROM ubuntu:xenial
 
-platform(
-    name = "rbe_linux_glibc_platform",
-    parents = ["@rbe_linux_glibc//config:platform"],
-    remote_execution_properties = """
-        {PARENT_REMOTE_EXECUTION_PROPERTIES}
-        properties: {
-          name: "dockerAddCapabilities"
-          value: "SYS_PTRACE,NET_RAW,NET_ADMIN"
-        }
-        properties: {
-          name: "dockerNetwork"
-          value: "standard"
-        }
-        """,
-)
+COPY build_container/getenvoy_linux_glibc_bazel.sh /build_container/getenvoy_linux_glibc_bazel.sh
+
+WORKDIR /build_container
+RUN ./getenvoy_linux_glibc_bazel.sh
+
+ARG rbe_image_digest
+ENV RBE_IMAGE_DIGEST=$rbe_image_digest
+
+COPY envoy_pkg /envoy_pkg
+WORKDIR /envoy_pkg
