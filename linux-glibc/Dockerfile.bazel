@@ -19,8 +19,8 @@ COPY build_container/getenvoy_linux_glibc_bazel.sh /build_container/getenvoy_lin
 WORKDIR /build_container
 RUN ./getenvoy_linux_glibc_bazel.sh
 
-ARG rbe_image_digest
-ENV RBE_IMAGE_DIGEST=$rbe_image_digest
+ARG rbe_image_tag
+ENV RBE_IMAGE_TAG=$rbe_image_tag
 
 COPY envoy_pkg /envoy_pkg
 WORKDIR /envoy_pkg

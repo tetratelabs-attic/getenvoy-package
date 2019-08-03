@@ -24,7 +24,7 @@ $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-bazel.tar: $(OUTPUT_DIR)/$(DISTRO)/b
 	@docker inspect --format='{{.Id}}' $(RBE_TAG)
 	@cat $(OUTPUT_DIR)/$(DISTRO)/bazel-docker-context.tar | \
 	    docker build - -t $(BAZEL_TAG) -f Dockerfile.bazel \
-	    --build-arg rbe_image_digest=`docker inspect --format='{{.Id}}' $(RBE_TAG)`
+	    --build-arg rbe_image_tag=$(SHA)
 	@docker save $(BAZEL_TAG) -o $@
 
 $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-rbe.tar: build_container/getenvoy_linux_glibc_rbe.sh Dockerfile.rbe

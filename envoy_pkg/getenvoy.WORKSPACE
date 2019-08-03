@@ -66,7 +66,7 @@ rbe_autoconfig(
     name = "rbe_linux_glibc",
     create_java_configs = False,
     env = rbe_envs(),
-    digest = "{RBE_IMAGE_DIGEST}",
+    tag = "{RBE_IMAGE_TAG}",
     registry = "gcr.io",
     repository = "getenvoy-package/rbe-linux-glibc",
     use_checked_in_confs = "False",
