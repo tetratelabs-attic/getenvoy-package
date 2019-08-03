@@ -65,6 +65,8 @@ jobs:
           gcloud config set gcloudignore/enabled false
           gcloud builds submit --config=cloudbuild/build_image.yaml . \
               --project ${GOOGLE_PROJECT_ID} --substitutions _GIT_SHA=${CIRCLE_SHA1}
+          gcloud builds submit --config=cloudbuild/test_image.yaml . \
+              --project ${GOOGLE_PROJECT_ID} --substitutions _GIT_SHA=${CIRCLE_SHA1}
 
   release_mac:
     <<: *mac
