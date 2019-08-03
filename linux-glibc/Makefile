@@ -24,7 +24,7 @@ $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-bazel.tar: $(OUTPUT_DIR)/$(DISTRO)/b
 	@cat $(OUTPUT_DIR)/$(DISTRO)/bazel-docker-context.tar | \
 	    docker build - -t $(BAZEL_TAG) -f Dockerfile.bazel \
 	    --build-arg rbe_image_digest=`docker inspect --format='{{.RepoDigests}}' $(RBE_TAG) | grep -oE 'sha256:[0-9a-f]+'`
-	@docker inspect --format='{{.RepoDigests}}' $(RBE_TAG) | grep -oE 'sha256:[0-9a-f]+'
+	docker inspect --format='{{.RepoDigests}}' $(RBE_TAG) | grep -oE 'sha256:[0-9a-f]+'
 	@docker save $(BAZEL_TAG) -o $@
 
 $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-rbe.tar: build_container/getenvoy_linux_glibc_rbe.sh Dockerfile.rbe
