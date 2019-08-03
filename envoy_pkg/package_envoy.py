@@ -190,10 +190,8 @@ def setUpWorkspace(variant):
         with open('getenvoy.WORKSPACE') as append:
             workspace.write(append.read().replace(
                 '{RBE_IMAGE_TAG}',
-                os.environ.get(
-                    'RBE_IMAGE_TAG',
-                    '26527a7d8f6c340c8efcdb0fc70dfea778d2a561'
-                )))
+                os.environ.get('RBE_IMAGE_TAG',
+                               '26527a7d8f6c340c8efcdb0fc70dfea778d2a561')))
 
     writeSourceInfo()
 
