@@ -45,35 +45,12 @@ steps:
   name: make
   args: ['linux-glibc']
 
-- name: gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
-  waitFor: ['build-alpine']
-  dir: ../envoy_pkg
-  entrypoint: '/envoy_pkg/package_envoy.py'
-  args: ['--test_package']
-  env:
-  - 'ENVOY_DIST=alpine'
-
-- name: gcr.io/getenvoy-package/build-centos:$_GIT_SHA
-  waitFor: ['build-centos']
-  dir: ../envoy_pkg
-  entrypoint: '/envoy_pkg/package_envoy.py'
-  args: ['--test_package']
-  env:
-  - 'ENVOY_DIST=centos'
-
-- name: gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
-  waitFor: ['build-ubuntu-xenial']
-  dir: ../envoy_pkg
-  entrypoint: '/envoy_pkg/package_envoy.py'
-  args: ['--test_package', '--test_distroless']
-  env:
-  - 'ENVOY_DIST=ubuntu-xenial'
-
 images:
   - gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
   - gcr.io/getenvoy-package/build-centos:$_GIT_SHA
   - gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
   - gcr.io/getenvoy-package/rbe-linux-glibc:$_GIT_SHA
+  - gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
 options:
   workerPool: 'getenvoy-package/envoy-build'
   env:

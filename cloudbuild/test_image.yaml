@@ -1,0 +1,60 @@
+# Copyright 2019 Tetrate
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+steps:
+- name: gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
+  waitFor: ['-']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--test_package']
+  env:
+  - 'ENVOY_DIST=alpine'
+
+- name: gcr.io/getenvoy-package/build-centos:$_GIT_SHA
+  waitFor: ['-']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--test_package']
+  env:
+  - 'ENVOY_DIST=centos'
+
+- name: gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
+  waitFor: ['-']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--test_package', '--test_distroless']
+  env:
+  - 'ENVOY_DIST=ubuntu-xenial'
+
+- name: gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
+  waitFor: ['-']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--test_package', '--test_distroless']
+  env:
+  - 'ENVOY_DIST=linux-glibc'
+
+- name: gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
+  waitFor: ['-']
+  dir: ../envoy_pkg
+  entrypoint: '/envoy_pkg/package_envoy.py'
+  args: ['--build_deb_package', '--build_distroless_docker']
+  env:
+  - 'ENVOY_DIST=linux-glibc'
+
+options:
+  workerPool: 'getenvoy-package/envoy-build'
+  env:
+  - 'TEST_TMPDIR=/tmp'
+timeout: 3600s

@@ -50,7 +50,24 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 container_pull(
     name = "distroless_base",
-    digest = "sha256:e37cf3289c1332c5123cbf419a1657c8dad0811f2f8572433b668e13747718f8", # 2019-07-11
+    digest = "sha256:e37cf3289c1332c5123cbf419a1657c8dad0811f2f8572433b668e13747718f8", # 2019-07-25
     registry = "gcr.io",
     repository = "distroless/base",
+)
+
+load("//bazel:bazel_toolchains.bzl", "bazel_toolchains_repositories")
+
+bazel_toolchains_repositories()
+
+load("//bazel:rbe_envs.bzl", "rbe_envs")
+load("@bazel_toolchains//rules:rbe_repo.bzl", "rbe_autoconfig")
+
+rbe_autoconfig(
+    name = "rbe_linux_glibc",
+    create_java_configs = False,
+    env = rbe_envs(),
+    tag = "{RBE_IMAGE_TAG}",
+    registry = "gcr.io",
+    repository = "getenvoy-package/rbe-linux-glibc",
+    use_checked_in_confs = "False",
 )

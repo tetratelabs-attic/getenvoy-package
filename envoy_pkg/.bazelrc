@@ -45,5 +45,41 @@ build:centos --define force_libcpp=enabled
 build:ubuntu-xenial --action_env=PATH=/usr/lib/llvm-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 build:ubuntu-xenial --linkopt=-fuse-ld=lld
 
+build:linux-glibc-toolchain --host_javabase=@bazel_tools//tools/jdk:remote_jdk11
+build:linux-glibc-toolchain --javabase=@bazel_tools//tools/jdk:remote_jdk11
+build:linux-glibc-toolchain --host_platform=@envoy_pkg//bazel:rbe_linux_glibc_platform
+build:linux-glibc-toolchain --platforms=@envoy_pkg//bazel:rbe_linux_glibc_platform
+build:linux-glibc-toolchain --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build:linux-glibc-toolchain --crosstool_top=@rbe_linux_glibc//cc:toolchain
+build:linux-glibc-toolchain --extra_toolchains=@rbe_linux_glibc//config:cc-toolchain
+build:linux-glibc-toolchain --action_env=CC=clang --action_env=CXX=clang++
+
+build:remote --spawn_strategy=remote,sandboxed,local
+build:remote --strategy=Javac=remote,sandboxed,local
+build:remote --strategy=Closure=remote,sandboxed,local
+build:remote --strategy=Genrule=remote,sandboxed,local
+build:remote --remote_timeout=3600
+build:remote --auth_enabled=true
+build:remote --experimental_inmemory_jdeps_files
+build:remote --experimental_inmemory_dotd_files
+
+build:linux-glibc --config=linux-glibc-toolchain
+build:linux-glibc --config=remote
+build:linux-glibc --remote_cache=grpcs://remotebuildexecution.googleapis.com
+build:linux-glibc --remote_executor=grpcs://remotebuildexecution.googleapis.com
+build:linux-glibc --remote_instance_name=projects/getenvoy-package/instances/default_instance
+build:linux-glibc --jobs=80
+build:linux-glibc --experimental_remote_download_outputs=all
+
+build:linux-glibc-docker --experimental_docker_image=gcr.io/getenvoy-package/rbe-linux-glibc@sha256:17a9702b9c29f6e244c415b67fc43c43ec432a9e602b412e5efc9b9e25f2bff7
+build:linux-glibc-docker --config=linux-glibc-toolchain
+build:linux-glibc-docker --spawn_strategy=docker
+build:linux-glibc-docker --strategy=Javac=docker
+build:linux-glibc-docker --strategy=Closure=docker
+build:linux-glibc-docker --strategy=Genrule=docker
+build:linux-glibc-docker --define=EXECUTOR=remote
+build:linux-glibc-docker --experimental_docker_verbose
+build:linux-glibc-docker --experimental_enable_docker_sandbox
+
 # This is no-op but if this doesn't exist bazel will error with non-exist config
 build:darwin --announce_rc
