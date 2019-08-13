@@ -485,8 +485,7 @@ def main():
         if args.upload:
             subprocess.check_call([
                 './bintray_uploader.py', '--version',
-                version.toString(), '--bintray_org', 'tetrate',
-                '--bintray_repo', 'getenvoy', package_file
+                version.toString(), package_file
             ])
 
         if args.build_deb_package:
