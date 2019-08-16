@@ -22,5 +22,22 @@ chmod +x /home/build/test-release.sh
 mkdir -p ${BUILD_DIR}
 chown build:build ${BUILD_DIR}
 
-sudo -u build scl enable devtoolset-7 \
-  "/home/build/test-release.sh -release 8.0.1 -final -triple x86_64-linux-centos7 -configure-flags '-DCOMPILER_RT_BUILD_LIBFUZZER=off' -build-dir ${BUILD_DIR}"
+CLANG_CONFIGURE_FLAGS="
+-DCOMPILER_RT_BUILD_LIBFUZZER=off
+-DCLANG_DEFAULT_CXX_STDLIB=libc++
+-DCLANG_DEFAULT_RTLIB=compiler-rt
+-DCLANG_DEFAULT_LINKER=lld
+-DLIBUNWIND_ENABLE_SHARED=off
+-DLIBUNWIND_USE_COMPILER_RT=on
+-DLIBCXX_USE_COMPILER_RT=on
+-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=on
+-DLIBCXXABI_USE_COMPILER_RT=on
+-DLIBCXXABI_USE_LLVM_UNWINDER=on
+-DLIBCXXABI_ENABLE_STATIC_UNWINDER=on
+"
+
+
+sudo -u build scl enable devtoolset-7 llvm-toolset-7 \
+  "env CC=clang CXX=clang++ LDFLAGS=-lm \
+    /home/build/test-release.sh -release 8.0.1 -final -triple x86_64-linux-centos7_libcxx \
+    -configure-flags '${CLANG_CONFIGURE_FLAGS}' -build-dir ${BUILD_DIR}"

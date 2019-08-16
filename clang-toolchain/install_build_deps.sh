@@ -18,7 +18,7 @@ set -e
 
 yum install -y centos-release-scl epel-release
 yum update -y
-yum install -y devtoolset-7-gcc devtoolset-7-gcc-c++ wget unzip which make cmake3 patch subversion ncurses-devel zlib-devel python-virtualenv chrpath file perl-Data-Dumper tcl python2-psutil sudo
+yum install -y llvm-toolset-7-clang wget unzip which make cmake3 patch subversion ncurses-devel zlib-devel python-virtualenv chrpath file perl-Data-Dumper tcl python2-psutil sudo
 
 ln -s /usr/bin/cmake3 /usr/bin/cmake
 
