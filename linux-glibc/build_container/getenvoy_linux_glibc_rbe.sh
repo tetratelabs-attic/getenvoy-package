@@ -27,6 +27,9 @@ ln -s /usr/bin/ninja-build /usr/bin/ninja
 curl -sSL http://storage.googleapis.com/getenvoy-package/clang-toolchain/edc07275ac4d48bd50d43cce1a042d12111dbc72/clang+llvm-8.0.1-x86_64-linux-centos7.tar.xz | \
   tar Jx --strip-components=1 -C /usr/local
 
+# Force libc++ to be a static link by putting a linker script to do that.
+echo 'INPUT(-l:libc++.a -l:libc++abi.a -lm -lpthread)' > /usr/local/lib/libc++.so
+
 # For FIPS (Clang 6.0.1 to detect GCC)
 mkdir -p /usr/lib/gcc/x86_64-redhat-linux
 ln -s /opt/rh/devtoolset-7/root/usr/lib/gcc/x86_64-redhat-linux/7 /usr/lib/gcc/x86_64-redhat-linux/7
@@ -38,3 +41,10 @@ echo "/opt/rh/httpd24/root/usr/lib64" > /etc/ld.so.conf.d/httpd24.conf
 yum install -y rpm-build rpm-sign
 
 yum clean all
+
+# bazelisk
+VERSION=1.0
+SHA256=820f1432bb729cf1d51697a64ce57c0cff7ea4013acaf871b8c24b6388174d0d
+curl --location --output /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v${VERSION}/bazelisk-linux-amd64 \
+  && echo "$SHA256  /usr/local/bin/bazel" | sha256sum --check \
+  && chmod +x /usr/local/bin/bazel
