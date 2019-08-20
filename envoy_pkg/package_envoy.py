@@ -34,8 +34,9 @@ RPM_VERSION_FILE_PATH = 'rpm/version.txt'
 
 
 class PackageVersion:
-    def __init__(self, envoy_version, envoy_revision, build_revision, dist,
-                 config, arch, deb_version, rpm_release):
+    def __init__(self, package_name, envoy_version, envoy_revision,
+                 build_revision, dist, config, arch, deb_version, rpm_release):
+        self.package_name = package_name
         self.envoy_version = envoy_version
         self.envoy_revision = envoy_revision
         self.build_revision = build_revision
@@ -57,6 +58,17 @@ class PackageVersion:
     def dockerVersion(self):
         return '{}-{}-{}-{}'.format(self.envoy_version, self.envoy_revision,
                                     self.build_revision, self.config)
+
+    def tarFileName(self):
+        return '{}-{}'.format(self.package_name, self.toString())
+
+    def debFileName(self):
+        return '{}_{}_{}'.format(self.package_name, self.deb_version,
+                                 self.arch)
+
+    def rpmFileName(self):
+        return '{}-{}-{}.{}'.format(self.package_name, self.rpm_version,
+                                    self.rpm_release, self.arch)
 
 
 class Variant:
@@ -166,13 +178,15 @@ def setUpWorkspace(variant):
             workspace_content = workspace.read()
         if "{ENVOY_SRCDIR}" in workspace_content:
             workspace_content = workspace_content.replace(
-                '{ENVOY_SRCDIR}', 'envoy').replace('"envoy_filter_example"',
-                                                   '"envoy_pkg"')
+                '{ENVOY_SRCDIR}', 'envoy')
         elif '"/source"' in workspace_content:
             workspace_content = workspace_content.replace(
                 '"/source"', '"envoy"')
         else:
             raise "Failed to setup workspace"
+
+        workspace_content = workspace_content.replace('"envoy_filter_example"',
+                                                      '"envoy_pkg"')
 
         with open('WORKSPACE', 'w') as workspace:
             workspace.write(workspace_content)
@@ -193,10 +207,10 @@ def setUpWorkspace(variant):
                 os.environ.get('RBE_IMAGE_TAG',
                                '26527a7d8f6c340c8efcdb0fc70dfea778d2a561')))
 
-    writeSourceInfo()
+    writeSourceInfo(variant)
 
 
-def writeSourceInfo():
+def writeSourceInfo(variant):
     revision = subprocess.check_output(
         ['git', '-C', 'envoy', 'rev-parse', 'HEAD']).strip()
     info = subprocess.call(
@@ -204,7 +218,7 @@ def writeSourceInfo():
     scm_status = "clean" if info == 0 else "modified"
 
     build_sha = getBuildRevision()
-    status = "{}-getenvoy-{}".format(scm_status, build_sha)
+    status = "{}-getenvoy-{}-{}".format(scm_status, build_sha, variant)
 
     envoy_committer_date = envoyCommitterDate()
 
@@ -247,6 +261,7 @@ def packageVersion(args):
     envoy_revision = info[0][0:7]
     build_revision = getBuildRevision()
     build_committer_date = getBuildDate()
+    package_name = 'getenvoy-{}'.format(args.variant)
 
     if envoy_version.endswith('-dev'):
         envoy_committer_date = envoyCommitterDate()
@@ -265,16 +280,13 @@ def packageVersion(args):
     deb_revision = '1~git{}.{}'.format(build_committer_date, build_revision)
     deb_version = '-'.join([upstream_version, deb_revision])
 
-    return PackageVersion(envoy_version,
+    return PackageVersion(package_name, envoy_version,
                           envoy_revision, build_revision, args.dist, config,
                           platform.machine(), deb_version, rpm_release)
 
 
 def packageBinary(args, version):
-    if args.variant == "envoy":
-        root = 'getenvoy-{}'.format(version)
-    else:
-        root = 'getenvoy-{}-{}'.format(args.variant, version)
+    root = version.tarFileName()
 
     package_name = '{}.tar.gz'.format(root)
     committer_date = int(envoyCommitterDate())
@@ -288,7 +300,6 @@ def packageBinary(args, version):
                 member.name = root + member.name[1:]
                 member.mtime = committer_date
                 tar_handle.addfile(member, from_tar.extractfile(member))
-    return package_name
 
 
 def buildDebPackage(args, package_version, variant):
@@ -316,8 +327,9 @@ def buildRpmPackage(args, package_version, variant):
         'build',
         ["//packages/{}:{}".format(args.variant, variant.rpm_package_target)],
         options=bazelOptions(args))
-    signRpmPackage(variant.rpm_package_path, args.gpg_secret_key,
-                   args.gpg_name)
+    if args.gpg_secret_key and args.gpg_name:
+        signRpmPackage(variant.rpm_package_path, args.gpg_secret_key,
+                       args.gpg_name)
 
 
 def signRpmPackage(package_path, gpg_secret_key, gpg_name):
@@ -353,11 +365,30 @@ def buildDistrolessDocker(args, package_version, variant):
         options=options)
 
 
-def storeArtifact(package_file):
-    directory = '/tmp/packaged'
+def storeArtifact(args, variant, version):
+    directory = '/tmp/getenvoy-package'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    shutil.copy(package_file, directory)
+    shutil.copy(version.tarFileName() + '.tar.gz', directory)
+    if args.build_deb_package:
+        shutil.copy(variant.deb_package_path,
+                    os.path.join(directory,
+                                 version.debFileName() + '.deb'))
+    if args.build_rpm_package:
+        shutil.copy(variant.rpm_package_path,
+                    os.path.join(directory,
+                                 version.rpmFileName() + '.rpm'))
+    if args.build_distroless_docker:
+        docker_image_tar = os.path.join(
+            directory, '{}-distroless-{}.tar'.format(version.package_name,
+                                                     version.toString()))
+        subprocess.check_call([
+            'docker', 'save',
+            'bazel/packages/{}:{}'.format(args.variant,
+                                          variant.distroless_target), '-o',
+            docker_image_tar
+        ])
+        subprocess.check_call(['xz', docker_image_tar])
 
 
 def testPackage(args):
@@ -401,7 +432,7 @@ def setDefaultArguments(args):
 
 
 def checkArguments(args):
-    if args.build_rpm_package:
+    if args.build_rpm_package and args.upload:
         if args.gpg_secret_key is None or args.gpg_name is None:
             raise Exception(
                 "gpg_secret_key and gpg_name args are required to build RPM package"
@@ -470,7 +501,7 @@ def main():
     cleanup()
     cloneEnvoy(args)
     if platform.system() == 'Darwin' and not args.nosetup:
-        subprocess.check_call(['envoy/ci/mac_ci_setup.sh'])
+        subprocess.check_call(['mac/setup.sh'])
     overrideBazel(args.override_bazel, args.override_bazel_sha256)
     setUpWorkspace(args.variant)
     if args.test_package:
@@ -480,12 +511,11 @@ def main():
             testEnvoy(args)
         buildBinaryTar(args)
         version = packageVersion(args)
-        package_file = packageBinary(args, version.toString())
-        storeArtifact(package_file)
+        packageBinary(args, version)
         if args.upload:
             subprocess.check_call([
                 './bintray_uploader.py', '--version',
-                version.toString(), package_file
+                version.toString(), version.tarFileName + '.tar.gz'
             ])
 
         if args.build_deb_package:
@@ -496,7 +526,7 @@ def main():
                     '--deb_version', version.deb_version, '--release_level',
                     version.release_level, variant.deb_package_path
                 ])
-        elif args.build_rpm_package:
+        if args.build_rpm_package:
             buildRpmPackage(args, version, variant)
             if args.upload:
                 subprocess.check_call([
@@ -520,6 +550,8 @@ def main():
                     'bazel/packages/{}:{}'.format(args.variant,
                                                   variant.distroless_target)
                 ])
+
+        storeArtifact(args, variant, version)
 
 
 if __name__ == "__main__":

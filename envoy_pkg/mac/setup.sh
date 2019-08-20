@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e -o pipefail
+set -e
 
-BINARY="test/version_info"
+brew tap bazelbuild/tap
+brew install bazelbuild/tap/bazelisk cmake coreutils go libtool ninja wget
 
-${BINARY} --version | grep -E '^[0-9a-f]{40}/[0-9]+\.[0-9]+\.[0-9]+(-dev)?/clean-getenvoy-[0-9a-f]{7}-[^/]+/(DEBUG|RELEASE)/(.*)$'
