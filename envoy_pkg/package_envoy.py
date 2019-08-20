@@ -73,8 +73,7 @@ class PackageVersion:
 
 class Variant:
     def __init__(self, name, deb_package_target, deb_package_path,
-                 rpm_package_target, rpm_package_path,
-                 distroless_target):
+                 rpm_package_target, rpm_package_path, distroless_target):
         self.name = name
         self.deb_package_target = deb_package_target
         self.deb_package_path = deb_package_path
