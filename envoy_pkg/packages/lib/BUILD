@@ -20,8 +20,13 @@ pkg_tar(
     name = "libcxx",
     strip_prefix = "/packages",
     srcs = select({
-        "@envoy//bazel:force_libcpp": glob(["libc++*.so.1"]),
+        ":bundle_libcpp": glob(["libc++*.so.1"]),
         "//conditions:default": [],
     }),
     mode = "0755",
+)
+
+config_setting(
+    name = "bundle_libcpp",
+    values = {"define": "bundle_libcpp=enabled"},
 )
