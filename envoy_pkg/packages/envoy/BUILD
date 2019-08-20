@@ -80,9 +80,10 @@ genrule(
 pkg_tar(
     name = "envoy-libcxx-data",
     srcs = [":envoy-libcxx-bin"],
-    deps = [
-        "//packages/lib:libcxx",
-    ],
+    deps = select({
+        "@envoy//bazel:force_libcpp": ["//packages/lib:libcxx"],
+        "//conditions:default": [],
+    }),
     remap_paths = {
         "/envoy-libcxx": "bin/envoy",
     },

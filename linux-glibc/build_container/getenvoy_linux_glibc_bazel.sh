@@ -22,7 +22,7 @@ apt-get -y update
 
 apt-get install -y --no-install-recommends curl wget make git python python-pip python-setuptools python3 python3-pip \
   unzip bc libtool ninja-build automake zip time gdb strace tshark tcpdump patch xz-utils rsync ssh-client \
-  software-properties-common apt-transport-https ca-certificates
+  software-properties-common apt-transport-https ca-certificates rpm
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 add-apt-repository \
@@ -35,8 +35,8 @@ apt-get update && apt-get -y install docker-ce docker-ce-cli containerd.io
 apt-get clean
 
 # bazelisk
-VERSION=0.0.8
-SHA256=5fced4fec06bf24beb631837fa9497b6698f34041463d9188610dfa7b91f4f8d
+VERSION=1.0
+SHA256=820f1432bb729cf1d51697a64ce57c0cff7ea4013acaf871b8c24b6388174d0d
 curl --location --output /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v${VERSION}/bazelisk-linux-amd64 \
   && echo "$SHA256  /usr/local/bin/bazel" | sha256sum --check \
   && chmod +x /usr/local/bin/bazel
