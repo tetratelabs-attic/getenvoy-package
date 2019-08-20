@@ -22,7 +22,7 @@ apt-get -y update
 
 apt-get install -y --no-install-recommends curl wget make git python python-pip python-setuptools python3 python3-pip \
   unzip bc libtool ninja-build automake zip time gdb strace tshark tcpdump patch xz-utils rsync ssh-client \
-  software-properties-common apt-transport-https ca-certificates
+  software-properties-common apt-transport-https ca-certificates rpm
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 add-apt-repository \
