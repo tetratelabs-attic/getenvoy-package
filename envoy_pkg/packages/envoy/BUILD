@@ -29,7 +29,7 @@ genrule(
     srcs = ["@envoy//source/exe:envoy-static"],
     outs = ["envoy-symbol"],
     cmd = "cp -Lv $(location @envoy//source/exe:envoy-static) $@" + select({
-        "@envoy//bazel:force_libcpp" : " && patchelf --set-rpath '$$ORIGIN/../lib' $@",
+        "//packages/lib:bundle_libcpp" : " && patchelf --set-rpath '$$ORIGIN/../lib' $@",
         "//conditions:default": "",
     }),
 )
@@ -72,7 +72,7 @@ genrule(
     srcs = [":envoy"],
     outs = ["envoy-libcxx"],
     cmd = "cp -Lv $(location :envoy) $@" + select({
-        "@envoy//bazel:force_libcpp" : " && patchelf --set-rpath '$$ORIGIN/../lib' $@",
+        "//packages/lib:bundle_libcpp" : " && patchelf --set-rpath '$$ORIGIN/../lib' $@",
         "//conditions:default": "",
     }),
 )
@@ -81,7 +81,7 @@ pkg_tar(
     name = "envoy-libcxx-data",
     srcs = [":envoy-libcxx-bin"],
     deps = select({
-        "@envoy//bazel:force_libcpp": ["//packages/lib:libcxx"],
+        "//packages/lib:bundle_libcpp" : ["//packages/lib:libcxx"],
         "//conditions:default": [],
     }),
     remap_paths = {

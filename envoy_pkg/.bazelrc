@@ -43,6 +43,7 @@ build:centos --action_env=CXXFLAGS=-stdlib=libc++
 build:centos --action_env=BAZEL_CXXOPTS=-stdlib=libc++
 build:centos --action_env=BAZEL_LINKLIBS=-l%:libc++.a:-l%:libc++abi.a:-lm
 build:centos --define force_libcpp=enabled
+build:centos --define bundle_libcpp=enabled
 
 build:ubuntu-xenial --action_env=PATH=/usr/lib/llvm-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 build:ubuntu-xenial --linkopt=-fuse-ld=lld
@@ -55,6 +56,7 @@ build:linux-glibc-toolchain --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 build:linux-glibc-toolchain --crosstool_top=@rbe_linux_glibc//cc:toolchain
 build:linux-glibc-toolchain --extra_toolchains=@rbe_linux_glibc//config:cc-toolchain
 build:linux-glibc-toolchain --action_env=CC=clang --action_env=CXX=clang++
+build:linux-glibc-toolchain --define force_libcpp=enabled
 
 build:remote --spawn_strategy=remote,sandboxed,local
 build:remote --strategy=Javac=remote,sandboxed,local
