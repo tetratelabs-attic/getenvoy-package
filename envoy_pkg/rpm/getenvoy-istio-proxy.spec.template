@@ -17,6 +17,4 @@ tar -xvf {rpm-data.tar} -C %{buildroot}
 
 %files
 /usr/bin/envoy
-/opt/getenvoy/bin/envoy
-/opt/getenvoy/lib/libc++.so.1
-/opt/getenvoy/lib/libc++abi.so.1
+/opt/getenvoy/**

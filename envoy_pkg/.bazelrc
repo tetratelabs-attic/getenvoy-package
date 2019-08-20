@@ -19,6 +19,8 @@ build --strip=never --copt=-ggdb3
 build --action_env=BAZEL_COMPILER=clang
 build --action_env=CC=clang
 build --action_env=CXX=clang++
+build --incompatible_strict_action_env
+build --test_output=errors
 
 build:release --compilation_mode=opt
 
