@@ -9,6 +9,6 @@ bazel-*
 /envoy_pkg/envoy
 /envoy_pkg/*.tar.gz
 /envoy_pkg/bazel.override
-/envoy_pkg/debian/version.txt
-/envoy_pkg/rpm/version.txt
-/envoy_pkg/rpm/getenvoy-*.spec
+/envoy_pkg/deb-version.txt
+/envoy_pkg/rpm-version.txt
+/envoy_pkg/packages/*/*.spec

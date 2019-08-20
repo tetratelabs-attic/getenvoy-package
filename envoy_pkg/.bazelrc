@@ -21,6 +21,7 @@ build --action_env=CC=clang
 build --action_env=CXX=clang++
 build --incompatible_strict_action_env
 build --test_output=errors
+build --workspace_status_command=bazel/get_workspace_status
 
 build:release --compilation_mode=opt
 
@@ -31,7 +32,13 @@ test --test_env=ENVOY_IP_TEST_VERSIONS=v4only
 
 # GetEnvoy variants
 build:envoy --incompatible_bzl_disallow_load_after_statement=false
-build:istio-proxy --incompatible_depset_union=false --incompatible_bzl_disallow_load_after_statement=false
+build:istio-proxy --incompatible_depset_union=false
+build:istio-proxy --incompatible_bzl_disallow_load_after_statement=false
+build:istio-proxy --incompatible_disable_deprecated_attr_params=false
+build:istio-proxy --incompatible_string_join_requires_strings=false
+build:istio-proxy --incompatible_require_ctx_in_configure_features=false
+build:istio-proxy --incompatible_depset_is_not_iterable=false
+build:istio-proxy --host_force_python=PY2
 
 # GetEnvoy distributions
 build:alpine --define=tcmalloc=disabled --define=signal_trace=disabled

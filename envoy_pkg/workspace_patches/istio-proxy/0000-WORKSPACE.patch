@@ -13,13 +13,15 @@
 # limitations under the License.
 
 diff --git a/WORKSPACE b/WORKSPACE
-index 1b23022..6dfae71 100644
+index a9c0baa..1b956aa 100644
 --- a/WORKSPACE
 +++ b/WORKSPACE
-@@ -14,11 +14,15 @@
+@@ -14,11 +14,17 @@
  #
  ################################################################################
  #
++workspace(name = "envoy_pkg")
++
 +local_repository(
 +    name = "proxy",
 +    path = "envoy",
