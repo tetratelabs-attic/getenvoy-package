@@ -514,7 +514,8 @@ def main():
         if args.upload:
             subprocess.check_call([
                 './bintray_uploader.py', '--version',
-                version.toString(), version.tarFileName() + '.tar.gz'
+                version.toString(),
+                version.tarFileName() + '.tar.gz'
             ])
 
         if args.build_deb_package:
