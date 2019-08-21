@@ -29,8 +29,8 @@ import sys
 import tarfile
 import base64
 
-DEB_VERSION_FILE_PATH = 'debian/version.txt'
-RPM_VERSION_FILE_PATH = 'rpm/version.txt'
+DEB_VERSION_FILE_PATH = 'deb-version.txt'
+RPM_VERSION_FILE_PATH = 'rpm-version.txt'
 
 
 class PackageVersion:
@@ -73,14 +73,13 @@ class PackageVersion:
 
 class Variant:
     def __init__(self, name, deb_package_target, deb_package_path,
-                 rpm_package_target, rpm_spec_path, rpm_package_path,
-                 distroless_target):
+                 rpm_package_target, rpm_package_path, distroless_target):
         self.name = name
         self.deb_package_target = deb_package_target
         self.deb_package_path = deb_package_path
         self.rpm_package_target = rpm_package_target
         # rpm_spec_path is expected to end with '.template'
-        self.rpm_spec_path = rpm_spec_path
+        self.rpm_spec_path = "packages/{}/rpm.spec.template".format(name)
         self.rpm_package_path = rpm_package_path
         self.distroless_target = distroless_target
 
@@ -89,14 +88,13 @@ VARIANTS = {
     'envoy':
     Variant('envoy', 'getenvoy-envoy-deb',
             'bazel-bin/packages/envoy/getenvoy-envoy-deb.deb',
-            'getenvoy-envoy-rpm', 'rpm/getenvoy-envoy.spec.template',
+            'getenvoy-envoy-rpm',
             'bazel-bin/packages/envoy/getenvoy-envoy-rpm.rpm',
             'getenvoy-envoy-distroless'),
     'istio-proxy':
     Variant('istio-proxy', 'getenvoy-istio-proxy-deb',
             'bazel-bin/packages/istio-proxy/getenvoy-istio-proxy-deb.deb',
             'getenvoy-istio-proxy-rpm',
-            'rpm/getenvoy-istio-proxy.spec.template',
             'bazel-bin/packages/istio-proxy/getenvoy-istio-proxy-rpm.rpm',
             'getenvoy-istio-proxy-distroless'),
 }
@@ -109,6 +107,7 @@ def cleanup():
         os.remove("WORKSPACE")
         os.remove("SOURCE_VERSION")
         os.remove(DEB_VERSION_FILE_PATH)
+        os.remove(RPM_VERSION_FILE_PATH)
     except BaseException:
         pass
 
@@ -388,7 +387,7 @@ def storeArtifact(args, variant, version):
                                           variant.distroless_target), '-o',
             docker_image_tar
         ])
-        subprocess.check_call(['xz', docker_image_tar])
+        subprocess.check_call(['xz', '-f', docker_image_tar])
 
 
 def testPackage(args):
@@ -515,7 +514,8 @@ def main():
         if args.upload:
             subprocess.check_call([
                 './bintray_uploader.py', '--version',
-                version.toString(), version.tarFileName + '.tar.gz'
+                version.toString(),
+                version.tarFileName() + '.tar.gz'
             ])
 
         if args.build_deb_package:
