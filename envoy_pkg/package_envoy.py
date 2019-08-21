@@ -365,7 +365,7 @@ def buildDistrolessDocker(args, package_version, variant):
 
 
 def storeArtifact(args, variant, version):
-    directory = '/tmp/getenvoy-package'
+    directory = args.artifacts_directory
     if not os.path.exists(directory):
         os.makedirs(directory)
     shutil.copy(version.tarFileName() + '.tar.gz', directory)
@@ -478,6 +478,7 @@ def main():
                         action='store_true',
                         default=(os.environ.get("BUILD_DISTROLESS_DOCKER",
                                                 '0') == '1'))
+    parser.add_argument('--artifacts_directory')
     parser.add_argument('--override_bazel',
                         default=os.environ.get("OVERRIDE_BAZEL"),
                         help="Bazel binary to download from")
@@ -550,8 +551,8 @@ def main():
                     'bazel/packages/{}:{}'.format(args.variant,
                                                   variant.distroless_target)
                 ])
-
-        storeArtifact(args, variant, version)
+        if args.artifacts_directory:
+            storeArtifact(args, variant, version)
 
 
 if __name__ == "__main__":
