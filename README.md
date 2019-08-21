@@ -32,7 +32,7 @@ CI built images are published to [`gcr.io/getenvoy-package`](https://gcr.io/gete
 To build the GetEnvoy package with the build image, run:
 
 ```
-docker run -v ${OUTPUT_DIR}:/tmp/getenvoy-package gcr.io/getenvoy-package/build-<DISTRIBUTION>:<GIT_SHA> ./package_envoy.py --dist <DISTRIBUTION>
+docker run -v ${OUTPUT_DIR}:/tmp/getenvoy-package gcr.io/getenvoy-package/build-<DISTRIBUTION>:<GIT_SHA> ./package_envoy.py --dist <DISTRIBUTION> --artifacts_directory /tmp/getenvoy-package
 ```
 
 Then the tar package will be copied to where `OUTPUT_DIR` points to. The GetEnvoy package is versioned with upstream git SHA and the build repo SHA. i
