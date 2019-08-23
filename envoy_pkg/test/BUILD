@@ -52,16 +52,15 @@ sh_test(
 
 pkg_tar(
     name = "test-tar",
-    package_dir = "/usr/bin",
     srcs = [":version_info"],
     mode = "0755",
+    package_dir = "/usr/bin",
 )
-
 
 container_image(
     name = "test-distroless",
     base = "@distroless_base//image",
-    tars = [":test-tar"],
     creation_time = "{BUILD_SCM_COMMITTER_DATE}",
     stamp = True,
+    tars = [":test-tar"],
 )

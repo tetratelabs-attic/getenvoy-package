@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright 2019 Tetrate
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//packages:getenvoy_package.bzl", "getenvoy_package")
+set -e
 
-getenvoy_package(
-    name = "istio-proxy",
-    binary_target = "@proxy//src/envoy:envoy",
-)
+cd envoy
+
+echo $(cat VERSION).p$(git rev-list --count $(git describe --abbrev=0 --tags)..HEAD).g$(git rev-parse --short HEAD)
