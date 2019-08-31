@@ -87,8 +87,6 @@ jobs:
           gcloud auth configure-docker
           gcloud container images add-tag gcr.io/getenvoy-package/build-alpine:$CIRCLE_SHA1 \
                                           gcr.io/getenvoy-package/build-alpine:latest --quiet
-          gcloud container images add-tag gcr.io/getenvoy-package/build-centos:$CIRCLE_SHA1 \
-                                          gcr.io/getenvoy-package/build-centos:latest --quiet
           gcloud container images add-tag gcr.io/getenvoy-package/build-ubuntu-xenial:$CIRCLE_SHA1 \
                                           gcr.io/getenvoy-package/build-ubuntu-xenial:latest --quiet
           gcloud container images add-tag gcr.io/getenvoy-package/bazel-linux-glibc:$CIRCLE_SHA1 \
