@@ -53,7 +53,8 @@ def cleanup():
 
 def overrideBazel(bazel_bin, bazel_sha256):
     if not bazel_bin:
-        bazel = subprocess.check_output(['which', 'bazel']).strip()
+        bazel = subprocess.check_output(['which',
+                                         'bazel']).strip().decode("utf-8")
         os.symlink(bazel, './bazel.override')
         return
 
@@ -193,7 +194,8 @@ def buildBinaryTar(args):
 
 
 def packageVersion(args):
-    version = subprocess.check_output([args.binary_path, '--version']).strip()
+    version = subprocess.check_output([args.binary_path,
+                                       '--version']).strip().decode("utf-8")
     info = version.split('version: ')[1].split('/')
     config = info[3].lower() if not args.config else args.config
     envoy_version = info[1]
