@@ -14,11 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os, sys
-sys.path.append(os.path.join(os.path.dirname(__file__), "python"))
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             "python"))  # noqa: E402
 
 from getenvoy.version import PackageVersion
-from getenvoy.variant import Variant, VARIANTS
+from getenvoy.variant import VARIANTS
 
 import argparse
 import atexit
@@ -26,12 +28,10 @@ import collections
 import glob
 import hashlib
 import logging
-import os
 import platform
 import re
 import shutil
 import subprocess
-import sys
 import tarfile
 import base64
 
