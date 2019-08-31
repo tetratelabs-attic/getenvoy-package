@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2019 Tetrate
 #
@@ -14,90 +14,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             "python"))  # noqa: E402
+
+from getenvoy.version import PackageVersion
+from getenvoy.variant import VARIANTS
+
 import argparse
 import atexit
 import collections
 import glob
 import hashlib
 import logging
-import os
 import platform
 import re
 import shutil
 import subprocess
-import sys
 import tarfile
 import base64
 
 DEB_VERSION_FILE_PATH = 'deb-version.txt'
 RPM_VERSION_FILE_PATH = 'rpm-version.txt'
-
-
-class PackageVersion:
-    def __init__(self, package_name, envoy_version, envoy_revision,
-                 build_revision, dist, config, arch, deb_version, rpm_release):
-        self.package_name = package_name
-        self.envoy_version = envoy_version
-        self.envoy_revision = envoy_revision
-        self.build_revision = build_revision
-        self.dist = dist
-        self.config = config
-        self.arch = arch
-        self.deb_version = deb_version
-        self.rpm_version = envoy_version.replace('-dev', '')
-        self.rpm_release = rpm_release
-        self.release_level = 'nightly' if envoy_version.endswith(
-            '-dev') else 'stable'
-
-    def toString(self):
-        return '{}-{}-{}-{}-{}-{}'.format(self.envoy_version,
-                                          self.envoy_revision,
-                                          self.build_revision, self.dist,
-                                          self.config, self.arch)
-
-    def dockerVersion(self):
-        return '{}-{}-{}-{}'.format(self.envoy_version, self.envoy_revision,
-                                    self.build_revision, self.config)
-
-    def tarFileName(self):
-        return '{}-{}'.format(self.package_name, self.toString())
-
-    def debFileName(self):
-        return '{}_{}_{}'.format(self.package_name, self.deb_version,
-                                 self.arch)
-
-    def rpmFileName(self):
-        return '{}-{}-{}.{}'.format(self.package_name, self.rpm_version,
-                                    self.rpm_release, self.arch)
-
-
-class Variant:
-    def __init__(self, name, deb_package_target, deb_package_path,
-                 rpm_package_target, rpm_package_path, distroless_target):
-        self.name = name
-        self.deb_package_target = deb_package_target
-        self.deb_package_path = deb_package_path
-        self.rpm_package_target = rpm_package_target
-        # rpm_spec_path is expected to end with '.template'
-        self.rpm_spec_path = "packages/{}/rpm.spec.template".format(name)
-        self.rpm_package_path = rpm_package_path
-        self.distroless_target = distroless_target
-
-
-VARIANTS = {
-    'envoy':
-    Variant('envoy', 'getenvoy-envoy-deb',
-            'bazel-bin/packages/envoy/getenvoy-envoy-deb.deb',
-            'getenvoy-envoy-rpm',
-            'bazel-bin/packages/envoy/getenvoy-envoy-rpm.rpm',
-            'getenvoy-envoy-distroless'),
-    'istio-proxy':
-    Variant('istio-proxy', 'getenvoy-istio-proxy-deb',
-            'bazel-bin/packages/istio-proxy/getenvoy-istio-proxy-deb.deb',
-            'getenvoy-istio-proxy-rpm',
-            'bazel-bin/packages/istio-proxy/getenvoy-istio-proxy-rpm.rpm',
-            'getenvoy-istio-proxy-distroless'),
-}
 
 
 def cleanup():
@@ -114,7 +53,8 @@ def cleanup():
 
 def overrideBazel(bazel_bin, bazel_sha256):
     if not bazel_bin:
-        bazel = subprocess.check_output(['which', 'bazel']).strip()
+        bazel = subprocess.check_output(['which',
+                                         'bazel']).strip().decode("utf-8")
         os.symlink(bazel, './bazel.override')
         return
 
@@ -167,7 +107,8 @@ def getBuildDate():
 
 def envoyCommitterDate():
     return subprocess.check_output(
-        ['git', '-C', 'envoy', 'log', '--pretty=%ct', '-1']).strip()
+        ['git', '-C', 'envoy', 'log', '--pretty=%ct',
+         '-1']).strip().decode("utf-8")
 
 
 def setUpWorkspace(variant):
@@ -211,7 +152,7 @@ def setUpWorkspace(variant):
 
 def writeSourceInfo(variant):
     revision = subprocess.check_output(
-        ['git', '-C', 'envoy', 'rev-parse', 'HEAD']).strip()
+        ['git', '-C', 'envoy', 'rev-parse', 'HEAD']).strip().decode("utf-8")
     info = subprocess.call(
         ['git', '-C', 'envoy', 'diff-index', '--quiet', 'HEAD'])
     scm_status = "clean" if info == 0 else "modified"
@@ -253,7 +194,8 @@ def buildBinaryTar(args):
 
 
 def packageVersion(args):
-    version = subprocess.check_output([args.binary_path, '--version']).strip()
+    version = subprocess.check_output([args.binary_path,
+                                       '--version']).strip().decode("utf-8")
     info = version.split('version: ')[1].split('/')
     config = info[3].lower() if not args.config else args.config
     envoy_version = info[1]

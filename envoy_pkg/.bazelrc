@@ -45,13 +45,6 @@ build:alpine --define=tcmalloc=disabled --define=signal_trace=disabled
 build:alpine --linkopt -static --linkopt=-lstdc++ --linkopt=-lm --linkopt -lexecinfo --linkopt -Wl,--allow-multiple-definition
 build:alpine --linkopt -fuse-ld=gold
 
-build:centos --action_env=PATH=/opt/llvm/bin:/opt/rh/devtoolset-7/root/usr/bin:/opt/rh/rh-git218/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-build:centos --action_env=CXXFLAGS=-stdlib=libc++
-build:centos --action_env=BAZEL_CXXOPTS=-stdlib=libc++
-build:centos --action_env=BAZEL_LINKLIBS=-l%:libc++.a:-l%:libc++abi.a:-lm
-build:centos --define force_libcpp=enabled
-build:centos --define bundle_libcpp=enabled
-
 build:ubuntu-xenial --action_env=PATH=/usr/lib/llvm-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 build:ubuntu-xenial --linkopt=-fuse-ld=lld
 

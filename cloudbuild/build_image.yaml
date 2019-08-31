@@ -30,11 +30,6 @@ steps:
   name: make
   args: ['alpine']
 
-- id: build-centos
-  waitFor: ['common']
-  name: make
-  args: ['centos']
-
 - id: build-ubuntu-xenial
   waitFor: ['common']
   name: make
@@ -47,7 +42,6 @@ steps:
 
 images:
   - gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
-  - gcr.io/getenvoy-package/build-centos:$_GIT_SHA
   - gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
   - gcr.io/getenvoy-package/rbe-linux-glibc:$_GIT_SHA
   - gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
