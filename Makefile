@@ -16,7 +16,7 @@ UNAME := $(shell uname)
 OUTPUT_DIR ?= $(PWD)/build-image
 
 ifeq ($(UNAME), Linux)
-TARGETS := ubuntu-xenial alpine centos linux-glibc
+TARGETS := ubuntu-xenial alpine linux-glibc
 endif
 ifeq ($(UNAME), Darwin)
 TARGETS := mac

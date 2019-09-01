@@ -1,6 +1,11 @@
 build-image/
 bazel-*
 
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
 # testing packaging locally will result following files:
 /envoy_pkg/BUILD_REVISION
 /envoy_pkg/BUILD_RELEASE

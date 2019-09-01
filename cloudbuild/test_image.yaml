@@ -21,14 +21,6 @@ steps:
   env:
   - 'ENVOY_DIST=alpine'
 
-- name: gcr.io/getenvoy-package/build-centos:$_GIT_SHA
-  waitFor: ['-']
-  dir: ../envoy_pkg
-  entrypoint: '/envoy_pkg/package_envoy.py'
-  args: ['--test_package']
-  env:
-  - 'ENVOY_DIST=centos'
-
 - name: gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
   waitFor: ['-']
   dir: ../envoy_pkg

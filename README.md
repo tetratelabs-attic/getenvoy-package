@@ -50,7 +50,7 @@ Then inside docker run so the script won't cleanup the build environment.
 ```
 
 ## Supported distribution
-- [Ubuntu 16.04](https://gcr.io/getenvoy-package/build-ubuntu-xenial)
-- [CentOS/RHEL 7](https://gcr.io/getenvoy-package/build-centos)
+- [Linux GLIBC](https://gcr.io/getenvoy-package/build-linux-glibc) - which supports both Ubuntu 14.04+, CentOS/RHEL 7+.
+- [Ubuntu 16.04](https://gcr.io/getenvoy-package/build-ubuntu-xenial) (deprecated).
 - [macOS 10.13.6 with Xcode 10.1](https://circle-macos-docs.s3.amazonaws.com/image-manifest/build-474/index.html)
 - [Alpine Linux](https://gcr.io/getenvoy-package/build-alpine) (experimental, no GetEnvoy release based on this)
