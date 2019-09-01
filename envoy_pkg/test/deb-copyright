@@ -1,0 +1,8 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: GetEnvoy Test
+Source: <https://github.com/tetratelabs/getenvoy-package/>
+
+Files: *
+Copyright: Copyright 2019 Tetrate Labs
+License: Apache
+/usr/share/common-licenses/Apache-2.0

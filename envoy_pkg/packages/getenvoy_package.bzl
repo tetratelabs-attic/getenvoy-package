@@ -55,6 +55,7 @@ def getenvoy_package(name, binary_target):
         srcs = [stripped_binary_target],
         outs = ["envoy"],
         cmd = "cp -L $< $@",
+        tags = ["manual"],
     )
 
     native.genrule(
@@ -65,6 +66,7 @@ def getenvoy_package(name, binary_target):
             "//packages/lib:bundle_libcpp": " && patchelf --set-rpath '$$ORIGIN/../lib' $@",
             "//conditions:default": "",
         }),
+        tags = ["manual"],
     )
 
     pkg_tar(
@@ -137,6 +139,7 @@ def getenvoy_package(name, binary_target):
         package_dir = "/usr/bin",
         srcs = [":envoy-bin"],
         mode = "0755",
+        tags = ["manual"],
     )
 
     pkg_tar(
@@ -146,6 +149,7 @@ def getenvoy_package(name, binary_target):
             "/deb-copyright": "/copyright",
         },
         package_dir = "/usr/share/doc/getenvoy-" + name,
+        tags = ["manual"],
     )
 
     native.genrule(
@@ -156,6 +160,7 @@ def getenvoy_package(name, binary_target):
             "//packages/lib:bundle_libcpp": " && patchelf --set-rpath '$$ORIGIN/../lib' $@",
             "//conditions:default": "",
         }),
+        tags = ["manual"],
     )
 
     pkg_tar(
@@ -168,6 +173,7 @@ def getenvoy_package(name, binary_target):
         remap_paths = {
             "/envoy-libcxx": "bin/envoy",
         },
+        tags = ["manual"],
     )
 
     pkg_tar(
@@ -179,6 +185,7 @@ def getenvoy_package(name, binary_target):
         symlinks = {
             "./usr/bin/envoy": "/opt/getenvoy/bin/envoy",
         },
+        tags = ["manual"],
     )
 
     pkg_tar(
@@ -187,46 +194,16 @@ def getenvoy_package(name, binary_target):
             ":envoy-bin-tar",
             ":envoy-copyright",
         ],
+        tags = ["manual"],
     )
 
-    pkg_deb(
-        name = _deb_name(name),
-        # TODO(taiki45): accept multiple archs.
-        architecture = "amd64",
-        data = ":deb-data",
-        description = "Certified, Compliant and Conformant Builds of Envoy",
-        homepage = "https://getenvoy.io/",
-        maintainer = "Tetrate.io, Inc. <getenvoy@tetrate.io>",
-        package = "getenvoy-envoy",
-        # We can pass version via action_env but it makes debug slower,
-        # so just use generated file here.
-        version_file = "//:deb-version.txt",
-    )
-
-    pkg_tar(
-        name = _tar_name(name),
-        srcs = [":envoy-symbol"],
-        remap_paths = {
-            "/envoy-symbol": "bin/envoy",
-        },
-        deps = [
-            "//packages/lib:libcxx",
-        ],
-    )
-
-    pkg_rpm(
-        name = _rpm_name(name),
-        architecture = "x86_64",
-        spec_file = ":rpm.spec",
-        version_file = "//:rpm-version.txt",
-        data = [":rpm-data"],
-    )
-
-    container_image(
-        name = _distroless_name(name),
-        base = "@distroless_base//image",
-        debs = [":" + _deb_name(name) + ".deb"],
-        entrypoint = ["/usr/bin/envoy"],
-        creation_time = "{BUILD_SCM_COMMITTER_DATE}",
-        stamp = True,
+    native.filegroup(
+        name = "all_packages",
+        srcs = [
+            ":tar-package-stripped.tar.xz",
+            ":tar-package-symbol.tar.xz",
+            ":rpm-package.rpm",
+            ":deb-package.deb",
+            ":distroless-package.tar",
+        ]
     )

@@ -18,8 +18,6 @@ load(
     "@envoy//bazel:envoy_build_system.bzl",
     "envoy_cc_binary",
 )
-load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 
 envoy_cc_binary(
     name = "version_info",
@@ -50,17 +48,9 @@ sh_test(
     data = [":version_info"],
 )
 
-pkg_tar(
-    name = "test-tar",
-    srcs = [":version_info"],
-    mode = "0755",
-    package_dir = "/usr/bin",
-)
+load("//packages:getenvoy_package.bzl", "getenvoy_package")
 
-container_image(
-    name = "test-distroless",
-    base = "@distroless_base//image",
-    creation_time = "{BUILD_SCM_COMMITTER_DATE}",
-    stamp = True,
-    tars = [":test-tar"],
+getenvoy_package(
+    name = "test",
+    binary_target = ":version_info",
 )
