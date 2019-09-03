@@ -135,7 +135,44 @@ def storeArtifacts(args, workspace_info):
 
 
 def uploadArtifacts(args, workspace_info):
-    pass
+    subprocess.check_call([
+        './bintray_uploader.py', '--version',
+        version.debVersion(workspace_info),
+        os.path.join(directory, version.tarFileName(workspace_info))
+    ])
+    subprocess.check_call([
+        './bintray_uploader.py', '--version',
+        version.debVersion(workspace_info),
+        os.path.join(directory, version.tarFileName(workspace_info, symbol=True))
+    ])
+    if args.build_deb_package:
+        subprocess.check_call([
+            './bintray_uploader_deb.py', '--variant', workspace_info['variant'],
+            '--deb_version', version.debVersion(workspace_info), '--release_level',
+            args.release_level, os.path.join(directory, version.debFileName(workspace_info))
+        ])
+    if args.build_rpm_package:
+        subprocess.check_call([
+            './bintray_uploader_rpm.py',
+            '--variant',
+            workspace_info['variant'],
+            '--rpm_version',
+            workspace_info['source_version'],
+            '--rpm_release',
+            workspace_info['getenvoy_release'],
+            '--release_level',
+            args.release_level,
+            os.path.join(directory, version.rpmFileName(workspace_info)),
+        ])
+    if args.build_distroless_docker:
+        docker_image_tar = os.path.join(directory, version.distrolessFileName(workspace_info))
+        load_cmd = 'xzcat "{}.xz" | docker load'.format(docker_image_tar)
+        subprocess.check_call(load_cmd, shell=True)
+        subprocess.check_call([
+            './docker_upload.py', '--docker_version',
+            version.dockerVersion(workspace_info), '--variant', workspace_info['variant'],
+            version.dockerTag(workspace_info)
+        ])
 
 def testPackage(args):
     runBazel('test', ['//test/...'], options=bazelOptions(args))
@@ -198,6 +235,7 @@ def main():
                         default=(os.environ.get("BUILD_DISTROLESS_DOCKER",
                                                 '0') == '1'))
     parser.add_argument('--artifacts_directory')
+    parser.add_argument('--release_level', default="nightly", choices=["nightly", "stable"])
 
     args = parser.parse_args()
     checkArguments(args)

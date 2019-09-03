@@ -22,10 +22,12 @@ def tarDirectory(workspace_info, symbol = False):
     )
 
 def dockerTag(workspace_info):
-    return "getenvoy-{}:{}".format(workspace_info["variant"], debVersion(workspace_info))
+    return "getenvoy-{}:{}".format(workspace_info["variant"], dockerVersion(workspace_info))
 
 def debVersion(workspace_info):
     return "-".join([workspace_info["source_version"], workspace_info["getenvoy_release"]])
+
+dockerVersion = debVersion
 
 def tarFileName(workspace_info, symbol = False):
     return tarDirectory(workspace_info, symbol) + ".tar.xz"
