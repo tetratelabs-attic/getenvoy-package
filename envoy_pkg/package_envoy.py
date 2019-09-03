@@ -190,7 +190,7 @@ def uploadArtifacts(args, workspace_info):
 def testPackage(args):
     runBazel('test', ['//test/...'], options=bazelOptions(args))
     if args.test_distroless:
-        runBazel('run', ['//test:test-distroless'], options=bazelOptions(args))
+        runBazel('run', ['//test:distroless-image'], options=bazelOptions(args))
 
 
 def testEnvoy(args):
