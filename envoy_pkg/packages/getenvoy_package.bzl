@@ -14,32 +14,9 @@
 
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_deb", _pkg_tar = "pkg_tar")
 load("@bazel_tools//tools/build_defs/pkg:rpm.bzl", "pkg_rpm")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_bundle", "container_image")
 load("//:workspace_info.bzl", "PACKAGE_VERSION")
-
-def _tar_name(name):
-    return "tar-package"
-
-def _deb_name(name):
-    return "getenvoy-" + name + "-deb"
-
-def _rpm_name(name):
-    return "getenvoy-" + name + "-rpm"
-
-def _distroless_name(name):
-    return "getenvoy-" + name + "-distroless"
-
-def _tar_dir(name, additional_suffix = ""):
-    return "getenvoy-{}-{}-{}-{}-{}".format(
-        name,
-        PACKAGE_VERSION["source_version"],
-        PACKAGE_VERSION["getenvoy_release"],
-        PACKAGE_VERSION["tar_suffix"] + additional_suffix,
-        PACKAGE_VERSION["architecture"],
-    )
-
-def _deb_version():
-    return "{}-{}".format(PACKAGE_VERSION["source_version"], PACKAGE_VERSION["getenvoy_release"])
+load("//python/getenvoy:version.bzl", _tar_dir = "tarDirectory", _deb_version = "debVersion", _docker_tag = "dockerTag")
 
 def pkg_tar(**kwargs):
     _pkg_tar(mtime = int(PACKAGE_VERSION["envoy_committer_date"]), portable_mtime = False, **kwargs)
@@ -79,7 +56,7 @@ def getenvoy_package(name, binary_target):
         modes = {
             "bin/envoy": "0755",
         },
-        package_dir = _tar_dir(name),
+        package_dir = _tar_dir(PACKAGE_VERSION),
     )
 
     pkg_tar(
@@ -92,15 +69,12 @@ def getenvoy_package(name, binary_target):
         modes = {
             "bin/envoy": "0755",
         },
-        package_dir = _tar_dir(name, "-symbol"),
+        package_dir = _tar_dir(PACKAGE_VERSION, symbol=True),
     )
-
-    arch = PACKAGE_VERSION["architecture"]
-    deb_arch = "amd64" if arch == "x86_64" else arch
 
     pkg_rpm(
         name = "rpm-package",
-        architecture = arch,
+        architecture = PACKAGE_VERSION["architecture"],
         spec_file = ":rpm.spec",
         version = PACKAGE_VERSION["source_version"],
         release = PACKAGE_VERSION["getenvoy_release"],
@@ -110,20 +84,27 @@ def getenvoy_package(name, binary_target):
     pkg_deb(
         name = "deb-package",
         # TODO(taiki45): accept multiple archs.
-        architecture = deb_arch,
-        data = ":deb-data",
+        architecture = PACKAGE_VERSION["debian_architecture"],
+        data = ":deb-data.tar.xz",
         description = "Certified, Compliant and Conformant Builds of Envoy",
         homepage = "https://getenvoy.io/",
         maintainer = "Tetrate.io, Inc. <getenvoy@tetrate.io>",
         package = "getenvoy-" + name,
-        version = _deb_version(),
+        version = _deb_version(PACKAGE_VERSION),
+    )
+
+    container_bundle(
+        name = "distroless-package",
+        images = {
+            _docker_tag(PACKAGE_VERSION): ":distroless-image",
+        }
     )
 
     container_image(
-        name = "distroless-package",
+        name = "distroless-image",
         base = "@distroless_base//image",
         tars = [
-            ":deb-data.tar",
+            ":deb-data.tar.xz",
         ],
         labels = {
             "io.getenvoy.variant": PACKAGE_VERSION["variant"],
@@ -190,6 +171,7 @@ def getenvoy_package(name, binary_target):
 
     pkg_tar(
         name = "deb-data",
+        extension = "tar.xz",
         deps = [
             ":envoy-bin-tar",
             ":envoy-copyright",

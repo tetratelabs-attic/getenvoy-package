@@ -16,35 +16,38 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 SED_CMD = "sed -i.bak " + " ".join(["-e '%s'" % e for e in [
     's~name = "six"~name = "six_workaround"~',
-    's~"@six//:six"~"@six_workaround//:six_workaround"~',
+    's~"@six//:six"~"//external:six"~',
     's~\"@six\"~\"@six_workaround\"~',
     's~if "six" not in excludes~if "six_workaround" not in excludes~',]])
 
-CONTAINERREGISTRY_RELEASE = "v0.0.34"
-
 http_archive(
     name = "containerregistry",
-    sha256 = "8182728578f7d7178e7efcef8ce9074988a1a2667f20ecff5cf6234fba284dd3",
-    strip_prefix = "containerregistry-" + CONTAINERREGISTRY_RELEASE[1:],
-    urls = [("https://github.com/google/containerregistry/archive/" +
-             CONTAINERREGISTRY_RELEASE + ".tar.gz")],
+    sha256 = "a8cdf2452323e0fefa4edb01c08b2ec438c9fa3192bc9f408b89287598c12abc",
+    strip_prefix = "containerregistry-0.0.36",
+    urls = ["https://github.com/google/containerregistry/archive/v0.0.36.tar.gz"],
     patch_cmds = [SED_CMD + " def.bzl BUILD.bazel"],
 )
 
+# Download the rules_docker repository at release v0.9.0
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "aed1c249d4ec8f703edddf35cbe9dfaca0b5f5ea6e4cd9e83e99f3b0d1136c3d",
-    strip_prefix = "rules_docker-0.7.0",
-    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.7.0.tar.gz"],
-    patch_cmds = [SED_CMD + " repositories/repositories.bzl"],
+    sha256 = "e513c0ac6534810eb7a14bf025a0f159726753f97f74ab7863c650d26e01d677",
+    strip_prefix = "rules_docker-0.9.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.9.0/rules_docker-v0.9.0.tar.gz"],
+    patch_cmds = [SED_CMD + " container/BUILD repositories/repositories.bzl"],
 )
 
 load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",
     container_repositories = "repositories",
 )
-
 container_repositories()
+
+# This is NOT needed when going through the language lang_image
+# "repositories" function(s).
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
 
 load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 

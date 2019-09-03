@@ -109,15 +109,19 @@ def writeVersionBzl(args):
 
     # TODO: more arch
     arch = platform.machine()
+    deb_arch = arch if arch != 'x86_64' else 'amd64'
 
     version_info = dict(variant=variant,
                         tar_suffix=args.tar_suffix,
                         envoy_committer_date=envoy_committer_date,
                         source_version=source_version,
                         architecture=arch,
+                        debian_architecture=deb_arch,
                         getenvoy_release=package_release)
     with open(WORKSPACE_INFO_FILE, 'w') as version_bzl:
         version_bzl.write("PACKAGE_VERSION = {}\n".format(repr(version_info)))
+    
+    return version_info
 
 
 def setupBazelWorkspace(variant):
@@ -162,7 +166,7 @@ def setup(args):
     cloneEnvoy(args)
     setupBazelWorkspace(args.variant)
     writeSourceInfo(args.variant)
-    writeVersionBzl(args)
+    return writeVersionBzl(args)
 
 
 def main():
