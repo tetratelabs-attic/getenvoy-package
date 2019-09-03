@@ -232,7 +232,8 @@ def main():
     parser.add_argument('--dist',
                         default=os.environ.get("ENVOY_DIST", 'unknown'))
     parser.add_argument('--config',
-                        default=os.environ.get("ENVOY_BUILD_CONFIG", "release"))
+                        default=os.environ.get("ENVOY_BUILD_CONFIG",
+                                               "release"))
     parser.add_argument('--target')
     parser.add_argument('--binary_path')
     parser.add_argument('--build_deb_package',
