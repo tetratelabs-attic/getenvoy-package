@@ -101,7 +101,7 @@ def getenvoy_package(name, binary_target):
         name = "distroless-package",
         images = {
             _docker_tag(PACKAGE_VERSION): ":distroless-image",
-        }
+        },
         tags = ["manual"],
     )
 
@@ -193,6 +193,6 @@ def getenvoy_package(name, binary_target):
             ":rpm-package.rpm",
             ":deb-package.deb",
             ":distroless-package.tar",
-        ]
+        ],
         tags = ["manual"],
     )
