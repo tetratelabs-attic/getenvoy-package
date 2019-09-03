@@ -57,6 +57,7 @@ def getenvoy_package(name, binary_target):
             "bin/envoy": "0755",
         },
         package_dir = _tar_dir(PACKAGE_VERSION),
+        tags = ["manual"],
     )
 
     pkg_tar(
@@ -70,6 +71,7 @@ def getenvoy_package(name, binary_target):
             "bin/envoy": "0755",
         },
         package_dir = _tar_dir(PACKAGE_VERSION, symbol=True),
+        tags = ["manual"],
     )
 
     pkg_rpm(
@@ -79,6 +81,7 @@ def getenvoy_package(name, binary_target):
         version = PACKAGE_VERSION["source_version"],
         release = PACKAGE_VERSION["getenvoy_release"],
         data = [":rpm-data"],
+        tags = ["manual"],
     )
 
     pkg_deb(
@@ -91,6 +94,7 @@ def getenvoy_package(name, binary_target):
         maintainer = "Tetrate.io, Inc. <getenvoy@tetrate.io>",
         package = "getenvoy-" + name,
         version = _deb_version(PACKAGE_VERSION),
+        tags = ["manual"],
     )
 
     container_bundle(
@@ -98,6 +102,7 @@ def getenvoy_package(name, binary_target):
         images = {
             _docker_tag(PACKAGE_VERSION): ":distroless-image",
         }
+        tags = ["manual"],
     )
 
     container_image(
@@ -113,6 +118,7 @@ def getenvoy_package(name, binary_target):
         },
         entrypoint = ["/usr/bin/envoy"],
         creation_time = PACKAGE_VERSION["envoy_committer_date"],
+        tags = ["manual"],
     )
 
     pkg_tar(
@@ -188,4 +194,5 @@ def getenvoy_package(name, binary_target):
             ":deb-package.deb",
             ":distroless-package.tar",
         ]
+        tags = ["manual"],
     )
