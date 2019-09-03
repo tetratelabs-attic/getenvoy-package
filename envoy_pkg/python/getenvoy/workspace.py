@@ -120,7 +120,7 @@ def writeVersionBzl(args):
                         getenvoy_release=package_release)
     with open(WORKSPACE_INFO_FILE, 'w') as version_bzl:
         version_bzl.write("PACKAGE_VERSION = {}\n".format(repr(version_info)))
-    
+
     return version_info
 
 

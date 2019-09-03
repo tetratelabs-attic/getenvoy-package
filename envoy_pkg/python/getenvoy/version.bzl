@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def tarDirectory(workspace_info, symbol = False):
+
+def tarDirectory(workspace_info, symbol=False):
     return "getenvoy-{}-{}-{}-{}-{}".format(
         workspace_info["variant"],
         workspace_info["source_version"],
@@ -21,16 +22,21 @@ def tarDirectory(workspace_info, symbol = False):
         workspace_info["architecture"],
     )
 
+
 def dockerTag(workspace_info):
     return "getenvoy-{}:{}".format(workspace_info["variant"], dockerVersion(workspace_info))
+
 
 def debVersion(workspace_info):
     return "-".join([workspace_info["source_version"], workspace_info["getenvoy_release"]])
 
+
 dockerVersion = debVersion
 
-def tarFileName(workspace_info, symbol = False):
+
+def tarFileName(workspace_info, symbol=False):
     return tarDirectory(workspace_info, symbol) + ".tar.xz"
+
 
 def debFileName(workspace_info):
     return "_".join([
@@ -39,18 +45,20 @@ def debFileName(workspace_info):
         workspace_info['debian_architecture'],
     ]) + ".deb"
 
+
 def rpmFileName(workspace_info):
     return "{}-{}-{}.{}.rpm".format(
         "getenvoy-{}".format(workspace_info['variant']),
-        workspace_info['source_version'], 
-        workspace_info['getenvoy_release'], 
+        workspace_info['source_version'],
+        workspace_info['getenvoy_release'],
         workspace_info['architecture'],
     )
+
 
 def distrolessFileName(workspace_info):
     return "{}-{}-{}-distroless-{}.tar".format(
         "getenvoy-{}".format(workspace_info['variant']),
-        workspace_info['source_version'], 
-        workspace_info['getenvoy_release'], 
+        workspace_info['source_version'],
+        workspace_info['getenvoy_release'],
         workspace_info['architecture'],
     )

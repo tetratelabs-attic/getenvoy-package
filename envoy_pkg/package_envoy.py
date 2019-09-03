@@ -19,22 +19,18 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              "python"))  # noqa: E402
 
-from getenvoy.variant import VARIANTS
 from getenvoy import version
 from getenvoy import workspace
 
 import argparse
 import atexit
+import base64
 import collections
-import glob
-import hashlib
 import logging
 import platform
-import re
 import shutil
 import subprocess
-import tarfile
-import base64
+import tempfile
 
 
 def runBazel(command, targets, startup_options={}, options={}):
@@ -68,7 +64,7 @@ def bazelOptions(args):
 
     # TODO(taiki45): Enforce python2 until all dependent libraries are fixed.
     # options['host_force_python'].append('PY2')
-    
+
     return options
 
 
@@ -82,12 +78,14 @@ def buildPackages(args):
     if args.build_rpm_package:
         targets.append("//packages/{}:rpm-package.rpm".format(args.variant))
     if args.build_distroless_docker:
-        targets.append("//packages/{}:distroless-package.tar".format(args.variant))
+        targets.append("//packages/{}:distroless-package.tar".format(
+            args.variant))
         # targets.append("//packages/{}:distroless-package.digest".format(args.variant))
     runBazel('build', targets, options=bazelOptions(args))
     if args.build_rpm_package and args.gpg_secret_key and args.gpg_name:
-        signRpmPackage("bazel-bin/packages/{}/rpm-package.rpm".format(args.variant), args.gpg_secret_key,
-                       args.gpg_name)
+        signRpmPackage(
+            "bazel-bin/packages/{}/rpm-package.rpm".format(args.variant),
+            args.gpg_secret_key, args.gpg_name)
 
 
 def signRpmPackage(package_path, gpg_secret_key, gpg_name):
@@ -117,24 +115,33 @@ def storeArtifacts(args, workspace_info):
     directory = args.artifacts_directory
     if not os.path.exists(directory):
         os.makedirs(directory)
-    shutil.copy("bazel-bin/packages/{}/tar-package-symbol.tar.xz".format(args.variant),
-        os.path.join(directory, version.tarFileName(workspace_info, symbol=True)))
-    shutil.copy("bazel-bin/packages/{}/tar-package-stripped.tar.xz".format(args.variant),
+    shutil.copy(
+        "bazel-bin/packages/{}/tar-package-symbol.tar.xz".format(args.variant),
+        os.path.join(directory, version.tarFileName(workspace_info,
+                                                    symbol=True)))
+    shutil.copy(
+        "bazel-bin/packages/{}/tar-package-stripped.tar.xz".format(
+            args.variant),
         os.path.join(directory, version.tarFileName(workspace_info)))
     if args.build_deb_package:
-        shutil.copy("bazel-bin/packages/{}/deb-package.deb".format(args.variant),
+        shutil.copy(
+            "bazel-bin/packages/{}/deb-package.deb".format(args.variant),
             os.path.join(directory, version.debFileName(workspace_info)))
     if args.build_rpm_package:
-        shutil.copy("bazel-bin/packages/{}/rpm-package.rpm".format(args.variant),
+        shutil.copy(
+            "bazel-bin/packages/{}/rpm-package.rpm".format(args.variant),
             os.path.join(directory, version.rpmFileName(workspace_info)))
     if args.build_distroless_docker:
-        docker_image_tar = os.path.join(directory, version.distrolessFileName(workspace_info))
-        shutil.copy("bazel-bin/packages/{}/distroless-package.tar".format(args.variant),
-                    docker_image_tar)
+        docker_image_tar = os.path.join(
+            directory, version.distrolessFileName(workspace_info))
+        shutil.copy(
+            "bazel-bin/packages/{}/distroless-package.tar".format(
+                args.variant), docker_image_tar)
         subprocess.check_call(['xz', '-f', docker_image_tar])
 
 
 def uploadArtifacts(args, workspace_info):
+    directory = args.artifacts_directory
     subprocess.check_call([
         './bintray_uploader.py', '--version',
         version.debVersion(workspace_info),
@@ -143,13 +150,16 @@ def uploadArtifacts(args, workspace_info):
     subprocess.check_call([
         './bintray_uploader.py', '--version',
         version.debVersion(workspace_info),
-        os.path.join(directory, version.tarFileName(workspace_info, symbol=True))
+        os.path.join(directory, version.tarFileName(workspace_info,
+                                                    symbol=True))
     ])
     if args.build_deb_package:
         subprocess.check_call([
-            './bintray_uploader_deb.py', '--variant', workspace_info['variant'],
-            '--deb_version', version.debVersion(workspace_info), '--release_level',
-            args.release_level, os.path.join(directory, version.debFileName(workspace_info))
+            './bintray_uploader_deb.py', '--variant',
+            workspace_info['variant'], '--deb_version',
+            version.debVersion(workspace_info), '--release_level',
+            args.release_level,
+            os.path.join(directory, version.debFileName(workspace_info))
         ])
     if args.build_rpm_package:
         subprocess.check_call([
@@ -165,14 +175,17 @@ def uploadArtifacts(args, workspace_info):
             os.path.join(directory, version.rpmFileName(workspace_info)),
         ])
     if args.build_distroless_docker:
-        docker_image_tar = os.path.join(directory, version.distrolessFileName(workspace_info))
+        docker_image_tar = os.path.join(
+            directory, version.distrolessFileName(workspace_info))
         load_cmd = 'xzcat "{}.xz" | docker load'.format(docker_image_tar)
         subprocess.check_call(load_cmd, shell=True)
         subprocess.check_call([
             './docker_upload.py', '--docker_version',
-            version.dockerVersion(workspace_info), '--variant', workspace_info['variant'],
+            version.dockerVersion(workspace_info), '--variant',
+            workspace_info['variant'],
             version.dockerTag(workspace_info)
         ])
+
 
 def testPackage(args):
     runBazel('test', ['//test/...'], options=bazelOptions(args))
@@ -235,7 +248,9 @@ def main():
                         default=(os.environ.get("BUILD_DISTROLESS_DOCKER",
                                                 '0') == '1'))
     parser.add_argument('--artifacts_directory')
-    parser.add_argument('--release_level', default="nightly", choices=["nightly", "stable"])
+    parser.add_argument('--release_level',
+                        default="nightly",
+                        choices=["nightly", "stable"])
 
     args = parser.parse_args()
     checkArguments(args)
