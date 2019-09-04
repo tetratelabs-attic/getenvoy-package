@@ -272,7 +272,7 @@ def main():
         buildPackages(args)
         if not args.artifacts_directory:
             tempdir = tempfile.TemporaryDirectory()
-            args.artifacts_directory = tempdir.name()
+            args.artifacts_directory = tempdir.name
             atexit.register(tempdir.cleanup)
         storeArtifacts(args, workspace_info)
         if args.upload:
