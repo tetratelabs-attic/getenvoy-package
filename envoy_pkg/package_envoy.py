@@ -62,9 +62,6 @@ def bazelOptions(args):
         options['action_env'].append(
             'PATH=/usr/local/bin:/opt/local/bin:/usr/bin:/bin:/usr/sbin:/sbin')
 
-    # TODO(taiki45): Enforce python2 until all dependent libraries are fixed.
-    # options['host_force_python'].append('PY2')
-
     return options
 
 
@@ -190,7 +187,7 @@ def uploadArtifacts(args, workspace_info):
 def testPackage(args):
     runBazel('test', ['//test/...'], options=bazelOptions(args))
     if args.test_distroless:
-        runBazel('run', ['//test:distroless-image'],
+        runBazel('build', ['//test:distroless-package.tar'],
                  options=bazelOptions(args))
 
 
