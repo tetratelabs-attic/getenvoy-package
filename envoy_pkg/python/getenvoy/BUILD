@@ -11,10 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-load("//packages:getenvoy_package.bzl", "getenvoy_package")
-
-getenvoy_package(
-    name = "istio-proxy",
-    binary_target = "@proxy//src/envoy:envoy",
-)

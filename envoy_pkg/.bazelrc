@@ -24,6 +24,8 @@ build --test_output=errors
 build --workspace_status_command=bazel/get_workspace_status
 
 build:release --compilation_mode=opt
+build:release --strip=never
+build:release --copt=-ggdb3
 
 build:release-fips --config=release
 build:release-fips --define boringssl=fips
@@ -73,7 +75,7 @@ build:linux-glibc --remote_cache=grpcs://remotebuildexecution.googleapis.com
 build:linux-glibc --remote_executor=grpcs://remotebuildexecution.googleapis.com
 build:linux-glibc --remote_instance_name=projects/getenvoy-package/instances/default_instance
 build:linux-glibc --jobs=80
-build:linux-glibc --experimental_remote_download_outputs=all
+build:linux-glibc --experimental_remote_download_outputs=toplevel
 
 build:linux-glibc-docker --experimental_docker_image=gcr.io/getenvoy-package/rbe-linux-glibc@sha256:17a9702b9c29f6e244c415b67fc43c43ec432a9e602b412e5efc9b9e25f2bff7
 build:linux-glibc-docker --config=linux-glibc-toolchain

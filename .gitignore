@@ -8,12 +8,13 @@ __pycache__/
 
 # testing packaging locally will result following files:
 /envoy_pkg/BUILD_REVISION
+/envoy_pkg/BUILD_RELEASE
 /envoy_pkg/BUILD_DATE
 /envoy_pkg/SOURCE_VERSION
 /envoy_pkg/WORKSPACE
 /envoy_pkg/envoy
 /envoy_pkg/*.tar.gz
+/envoy_pkg/*.rpm
+/envoy_pkg/*.deb
 /envoy_pkg/bazel.override
-/envoy_pkg/deb-version.txt
-/envoy_pkg/rpm-version.txt
-/envoy_pkg/packages/*/*.spec
+/envoy_pkg/workspace_info.bzl

@@ -60,13 +60,15 @@ jobs:
       - image: google/cloud-sdk
     steps:
       - checkout
-      - run: |
-          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-          gcloud config set gcloudignore/enabled false
-          gcloud builds submit --config=cloudbuild/build_image.yaml . \
-              --project ${GOOGLE_PROJECT_ID} --substitutions _GIT_SHA=${CIRCLE_SHA1}
-          gcloud builds submit --config=cloudbuild/test_image.yaml . \
-              --project ${GOOGLE_PROJECT_ID} --substitutions _GIT_SHA=${CIRCLE_SHA1}
+      - run:
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud config set gcloudignore/enabled false
+            gcloud builds submit --config=cloudbuild/build_image.yaml . \
+                --project ${GOOGLE_PROJECT_ID} --substitutions _GIT_SHA=${CIRCLE_SHA1}
+            gcloud builds submit --config=cloudbuild/test_image.yaml . \
+                --project ${GOOGLE_PROJECT_ID} --substitutions _GIT_SHA=${CIRCLE_SHA1}
+          no_output_timeout: 60m
 
   release_mac:
     <<: *mac

@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar", "pkg_deb")
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_deb", "pkg_tar")
 
 pkg_tar(
     name = "libcxx",
-    strip_prefix = "/packages",
     srcs = select({
         ":bundle_libcpp": glob(["libc++*.so.1"]),
         "//conditions:default": [],
     }),
     mode = "0755",
+    strip_prefix = "/packages",
 )
 
 config_setting(

@@ -1,7 +1,7 @@
 Name: getenvoy-envoy
-# Version will be overwritten with pkg_rpm
+# Version and release will be overwritten with pkg_rpm
 Version: 0.0.1
-Release: @@OVERWRITE_RELEASE@@%{?dist}
+Release: 0
 License: ASL 2.0
 Summary: Certified, Compliant and Conformant Builds of Envoy
 URL: https://getenvoy.io
@@ -16,5 +16,4 @@ tar -xvf {rpm-data.tar} -C %{buildroot}
 %global __os_install_post %{nil}
 
 %files
-/usr/bin/envoy
-/opt/getenvoy/**
+/**
