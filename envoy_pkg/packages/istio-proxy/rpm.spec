@@ -16,4 +16,5 @@ tar -xvf {rpm-data.tar} -C %{buildroot}
 %global __os_install_post %{nil}
 
 %files
-/**
+/usr/bin/**
+/opt/getenvoy/**
