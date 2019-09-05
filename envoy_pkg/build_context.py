@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2019 Tetrate
 #
@@ -20,7 +20,9 @@ import os
 import shutil
 import sys
 import tarfile
-import urllib2
+import urllib.request
+import urllib.error
+import urllib.parse
 
 from bintray_uploader import uploadToBintray
 
@@ -40,8 +42,8 @@ def download(args):
     headers = {'Authorization': 'Basic {}'.format(args.bintray_auth)}
     build_context_url = 'https://tetrate.bintray.com/{}/envoy-package-build-{}.tar'.format(
         args.bintray_repo, args.tag)
-    request = urllib2.Request(build_context_url, headers=headers)
-    build_context = urllib2.urlopen(request)
+    request = urllib.request.Request(build_context_url, headers=headers)
+    build_context = urllib.request.urlopen(request)
     directory = os.path.expanduser('~/envoy-package/build-image/mac')
     if not os.path.exists(directory):
         os.makedirs(directory)
