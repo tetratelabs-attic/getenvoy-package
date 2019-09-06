@@ -18,4 +18,4 @@ set -e
 
 cd envoy
 
-echo $(cat VERSION).p$(git rev-list --count $(git describe --abbrev=0 --tags)..HEAD).g$(git rev-parse --short HEAD)
+echo $(cat VERSION).p$(git rev-list --count $(git describe --abbrev=0 --tags)..HEAD).g$(git rev-parse --short=7 HEAD)
