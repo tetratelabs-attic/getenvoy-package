@@ -23,7 +23,7 @@ import sys
 
 
 def dockerLogin(docker_repo, auth):
-    user, password = base64.b64decode(auth).split(":", 1)
+    user, password = base64.b64decode(auth).decode("utf-8").split(":", 1)
     login_command = [
         'docker', 'login', '-u', user, '-p', password, docker_repo
     ]
