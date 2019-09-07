@@ -50,6 +50,7 @@ build:alpine --linkopt -fuse-ld=gold
 build:ubuntu-xenial --action_env=PATH=/usr/lib/llvm-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 build:ubuntu-xenial --linkopt=-fuse-ld=lld
 
+build:linux-glibc-toolchain --config=libc++
 build:linux-glibc-toolchain --host_javabase=@bazel_tools//tools/jdk:remote_jdk11
 build:linux-glibc-toolchain --javabase=@bazel_tools//tools/jdk:remote_jdk11
 build:linux-glibc-toolchain --host_platform=@envoy_pkg//bazel:rbe_linux_glibc_platform
