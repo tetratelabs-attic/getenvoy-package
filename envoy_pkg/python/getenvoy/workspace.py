@@ -125,6 +125,9 @@ def writeVersionBzl(args):
 
 
 def setupBazelWorkspace(variant):
+    if os.path.isfile('envoy/.bazelversion'):
+        shutil.copyfile('envoy/.bazelversion', '.bazelversion')
+
     if os.path.isfile('envoy/ci/WORKSPACE.filter.example'):
         workspace_content = ""
         with open('envoy/ci/WORKSPACE.filter.example') as workspace:
