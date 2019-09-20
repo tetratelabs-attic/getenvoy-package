@@ -28,7 +28,7 @@ artifacts:
     location: "gs://getenvoy-package/clang-toolchain/$COMMIT_SHA/"
     paths:
     - "/workspace/llvm-build/final/logs/*"
-    - "/workspace/llvm-build/final/*.tar.xz"
+    - "/workspace/llvm-build/final/clang+llvm-*.tar.xz"
 options:
   machineType: N1_HIGHCPU_32
   logging: GCS_ONLY
