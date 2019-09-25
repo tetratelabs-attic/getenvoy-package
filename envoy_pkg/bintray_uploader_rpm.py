@@ -110,13 +110,11 @@ def uploadToBintrayRpm(args, variant):
             except urllib.error.HTTPError as e:
                 if e.code == 409:
                     logging.info('{} is already exists'.format(args.filename))
-                    logging.info(e.fp.read())
                     # We already have uploaded the package, so don't raise errors
                 else:
                     logging.error(
                         'Failed to upload to bintray: response code {}'.format(
                             e.code))
-                    logging.error(e.fp.read())
                     raise
 
 
