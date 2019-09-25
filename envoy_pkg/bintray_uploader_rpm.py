@@ -39,6 +39,10 @@ DIST_RELEASE_PAIRS = [
         'releasever': '7'
     },
     {
+        'dist': 'centos',
+        'releasever': '8'
+    },
+    {
         'dist': 'rhel',
         # RHEL sets the yum var to `${version_number}${variant}`, while CentOS's defaults are just a version number.
         # See https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/deployment_guide/sec-using_yum_variables
@@ -106,13 +110,11 @@ def uploadToBintrayRpm(args, variant):
             except urllib.error.HTTPError as e:
                 if e.code == 409:
                     logging.info('{} is already exists'.format(args.filename))
-                    logging.info(e.fp.read())
                     # We already have uploaded the package, so don't raise errors
                 else:
                     logging.error(
                         'Failed to upload to bintray: response code {}'.format(
                             e.code))
-                    logging.error(e.fp.read())
                     raise
 
 
