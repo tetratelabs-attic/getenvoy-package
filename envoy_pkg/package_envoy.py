@@ -248,7 +248,8 @@ def main():
                                                 '0') == '1'))
     parser.add_argument('--artifacts_directory')
     parser.add_argument('--release_level',
-                        default="nightly",
+                        default=os.environ.get("ENVOY_RELEASE_LEVEL",
+                                               "nightly"),
                         choices=["nightly", "stable"])
 
     args = parser.parse_args()
