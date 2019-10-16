@@ -18,3 +18,4 @@ __pycache__/
 /envoy_pkg/*.deb
 /envoy_pkg/bazel.override
 /envoy_pkg/workspace_info.bzl
+/envoy_pkg/.bazelversion
