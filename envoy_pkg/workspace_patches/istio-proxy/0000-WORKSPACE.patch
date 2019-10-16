@@ -13,20 +13,20 @@
 # limitations under the License.
 
 diff --git a/WORKSPACE b/WORKSPACE
-index a9c0baa..1b956aa 100644
+index 22b90ef..4b8325e 100644
 --- a/WORKSPACE
 +++ b/WORKSPACE
-@@ -14,11 +14,17 @@
+@@ -14,12 +14,16 @@
  #
  ################################################################################
  #
+-workspace(name = "io_istio_proxy")
 +workspace(name = "envoy_pkg")
-+
 +local_repository(
 +    name = "proxy",
 +    path = "envoy",
 +)
- 
+
  # http_archive is not a native function since bazel 0.19
  load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
  load(
