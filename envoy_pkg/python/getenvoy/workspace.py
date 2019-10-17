@@ -151,10 +151,9 @@ def setupBazelWorkspace(variant):
 
         patches = glob.glob("workspace_patches/" + variant + "/*.patch")
         for p in reversed(sorted(patches)):
-            if subprocess.call(['patch', '-p1', 'WORKSPACE', p]) == 0:
-                break
-        else:
-            raise Exception("Failed to setup workspace")
+            print("applying patch: {}".format(p))
+            if subprocess.call(['patch', '-p1', 'WORKSPACE', p]) != 0:
+                raise Exception("Failed to setup workspace")
 
     with open('WORKSPACE', 'a+') as workspace:
         with open('getenvoy.WORKSPACE') as append:
