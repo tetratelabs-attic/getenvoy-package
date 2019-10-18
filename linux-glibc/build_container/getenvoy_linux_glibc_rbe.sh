@@ -24,7 +24,7 @@ yum install -y devtoolset-7-gcc-c++ devtoolset-7-libatomic-devel rsync rh-git218
 ln -s /usr/bin/cmake3 /usr/bin/cmake
 ln -s /usr/bin/ninja-build /usr/bin/ninja
 
-curl -sSL http://storage.googleapis.com/getenvoy-package/clang-toolchain/edc07275ac4d48bd50d43cce1a042d12111dbc72/clang+llvm-8.0.1-x86_64-linux-centos7.tar.xz | \
+curl -sSL http://storage.googleapis.com/getenvoy-package/clang-toolchain/0e9d364b7199f3aaecbaf914cea3d9df4e97b850/clang+llvm-9.0.0-x86_64-linux-centos7.tar.xz | \
   tar Jx --strip-components=1 -C /usr/local
 
 # Force libc++ to be a static link by putting a linker script to do that.
