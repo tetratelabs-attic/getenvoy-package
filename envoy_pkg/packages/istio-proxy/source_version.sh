@@ -26,4 +26,8 @@ git tag -f 1.3.0-dev 83f6566a81c980ed0f8038513315eca4184745ed
 # `git rev-list $(git merge-base release-1.3 master)..master | tail -n 1` as of 2019-08-22
 git tag -f 1.4.0-dev 47e4559b8e4f0d516c0d17b233d127a3deb3d7ce
 
+# First commit after release-1.4 is cut
+# `git rev-list $(git merge-base release-1.4 master)..master | tail -n 1` as of 2019-11-07
+git tag -f 1.5.0-dev f743933bd21326ad5f8b7fd10df2619910a80b6e
+
 echo $(git describe --abbrev=0 --tags).p$(git rev-list --count $(git describe --abbrev=0 --tags)..HEAD).g$(git rev-parse --short=7 HEAD)
