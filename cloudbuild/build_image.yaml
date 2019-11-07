@@ -25,11 +25,6 @@ steps:
   name: make
   args: ['common']
 
-- id: build-alpine
-  waitFor: ['common']
-  name: make
-  args: ['alpine']
-
 - id: build-ubuntu-xenial
   waitFor: ['common']
   name: make
@@ -41,7 +36,6 @@ steps:
   args: ['linux-glibc']
 
 images:
-  - gcr.io/getenvoy-package/build-alpine:$_GIT_SHA
   - gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
   - gcr.io/getenvoy-package/rbe-linux-glibc:$_GIT_SHA
   - gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
