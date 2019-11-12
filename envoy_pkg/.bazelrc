@@ -90,3 +90,6 @@ build:linux-glibc-docker --experimental_enable_docker_sandbox
 
 # This is no-op but if this doesn't exist bazel will error with non-exist config
 build:darwin --announce_rc
+build:darwin --config=libc++
+build:darwin --action_env=CC=clang --action_env=CXX=clang++
+build:darwin --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
