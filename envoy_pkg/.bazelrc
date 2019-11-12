@@ -92,4 +92,3 @@ build:linux-glibc-docker --experimental_enable_docker_sandbox
 build:darwin --announce_rc
 build:darwin --config=libc++
 build:darwin --action_env=CC=clang --action_env=CXX=clang++
-build:darwin --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
