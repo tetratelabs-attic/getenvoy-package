@@ -16,7 +16,6 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 SED_CMD = "sed -i.bak " + " ".join(["-e '%s'" % e for e in [
     's~name = "six"~name = "six_workaround"~',
-    's~"@six//:six"~"//external:six"~',
     's~\"@six\"~\"@six_workaround\"~',
     's~if "six" not in excludes~if "six_workaround" not in excludes~',]])
 
