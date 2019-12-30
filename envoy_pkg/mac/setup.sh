@@ -17,6 +17,9 @@
 set -ex
 
 brew update
-brew upgrade
+# It is possible that the upgrade of python is failed. However, the required archive are already
+# extracted. We need to link it up as "python3" since most of the scripts in this repository
+# require /usr/bin/env python3 to be correctly resolved.
+brew upgrade || ln -s /usr/local/bin/python /usr/local/bin/python3 || echo "symbolic link for python3 exists"
 brew tap bazelbuild/tap
 brew install bazelbuild/tap/bazelisk cmake coreutils go libtool ninja wget
