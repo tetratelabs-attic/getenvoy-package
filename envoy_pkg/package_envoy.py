@@ -44,7 +44,7 @@ def runBazel(command, targets, startup_options={}, options={}):
             argv.extend(['--{}={}'.format(k, i) for i in v])
     argv.extend(targets)
     logging.debug(" ".join(argv))
-    subprocess.check_call(argv)
+    subprocess.check_output(argv, stderr=subprocess.STDOUT)
 
 
 def bazelOptions(args):
