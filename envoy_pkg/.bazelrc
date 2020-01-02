@@ -15,7 +15,7 @@
 import %workspace%/envoy/.bazelrc
 
 # GetEnvoy startup options. Overrides the default one.
-startup --host_jvm_args=-Xmx1g
+startup --host_jvm_args=-Xmx512m
 
 # GetEnvoy options
 build --strip=never --copt=-ggdb3
