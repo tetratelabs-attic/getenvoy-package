@@ -90,3 +90,6 @@ build:linux-glibc-docker --experimental_enable_docker_sandbox
 
 # This is no-op but if this doesn't exist bazel will error with non-exist config
 build:darwin --announce_rc
+build:darwin --discard_analysis_cache
+build:darwin --notrack_incremental_state
+build:darwin --nokeep_state_after_build
