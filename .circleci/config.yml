@@ -98,6 +98,7 @@ jobs:
     <<: *mac
     environment:
       ENVOY_DIST: darwin
+      _JAVA_OPTIONS: -Xmx1g
     steps:
       - checkout
       - run: git status # to fix CircleCI spurious git error
