@@ -293,10 +293,10 @@ def main():
     if args.test_package:
         testPackage(args)
     else:
-        if args.test_envoy:
-            testEnvoy(args)
         if args.upload and not args.override:
             bailIfPackagesExist(args, workspace_info)
+        if args.test_envoy:
+            testEnvoy(args)
         buildPackages(args)
         if not args.artifacts_directory:
             tempdir = tempfile.TemporaryDirectory()
