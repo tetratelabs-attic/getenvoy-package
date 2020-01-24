@@ -137,26 +137,50 @@ def storeArtifacts(args, workspace_info):
         subprocess.check_call(['xz', '-f', docker_image_tar])
 
 
+def bailIfPackagesExist(args, workspace_info):
+    subprocess.check_call([
+        './bintray_uploader.py', '--version',
+        version.debVersion(workspace_info), '--check_nonexisting',
+        os.path.join(args.artifacts_directory,
+                     version.tarFileName(workspace_info))
+    ])
+    subprocess.check_call([
+        './bintray_uploader.py', '--version',
+        version.debVersion(workspace_info), '--check_nonexisting',
+        os.path.join(args.artifacts_directory,
+                     version.tarFileName(workspace_info, symbol=True))
+    ])
+
+
 def uploadArtifacts(args, workspace_info):
     directory = args.artifacts_directory
     subprocess.check_call([
-        './bintray_uploader.py', '--version',
+        './bintray_uploader.py',
+        '--version',
         version.debVersion(workspace_info),
-        os.path.join(directory, version.tarFileName(workspace_info))
+        os.path.join(directory, version.tarFileName(workspace_info)),
+        '--override',
+        str(args.override),
     ])
     subprocess.check_call([
-        './bintray_uploader.py', '--version',
+        './bintray_uploader.py',
+        '--version',
         version.debVersion(workspace_info),
         os.path.join(directory, version.tarFileName(workspace_info,
-                                                    symbol=True))
+                                                    symbol=True)),
+        '--override',
+        str(args.override),
     ])
     if args.build_deb_package:
         subprocess.check_call([
-            './bintray_uploader_deb.py', '--variant',
-            workspace_info['variant'], '--deb_version',
-            version.debVersion(workspace_info), '--release_level',
+            './bintray_uploader_deb.py',
+            '--variant',
+            workspace_info['variant'],
+            '--deb_version',
+            version.debVersion(workspace_info),
+            '--release_level',
             args.release_level,
-            os.path.join(directory, version.debFileName(workspace_info))
+            os.path.join(directory, version.debFileName(workspace_info)),
         ])
     if args.build_rpm_package:
         subprocess.check_call([
@@ -222,6 +246,7 @@ def main():
     parser.add_argument('--nosetup', action='store_true')
     parser.add_argument('--nocleanup', action='store_true')
     parser.add_argument('--upload', action='store_true')
+    parser.add_argument('--override', action='store_true', default=False)
     parser.add_argument('--test_distroless', action='store_true')
     parser.add_argument('--test_package', action='store_true')
     parser.add_argument('--test_envoy',
@@ -268,6 +293,8 @@ def main():
     if args.test_package:
         testPackage(args)
     else:
+        if args.upload and not args.override:
+            bailIfPackagesExist(args, workspace_info)
         if args.test_envoy:
             testEnvoy(args)
         buildPackages(args)

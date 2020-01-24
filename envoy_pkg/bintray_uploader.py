@@ -15,11 +15,48 @@
 # limitations under the License.
 
 import argparse
+import json
 import logging
 import os
+import sys
 import urllib.request
 import urllib.error
 import urllib.parse
+
+
+def checkBintray(args):
+    headers = {
+        'Authorization': 'Basic {}'.format(args.bintray_auth),
+    }
+    bintray_url = 'https://api.bintray.com/packages/{}/{}/{}/versions/{}/files?include_unpublished=1'.format(
+        args.bintray_org, args.bintray_repo, args.bintray_pkg, args.version)
+    logging.debug(
+        'Checking versioned packages files at {}'.format(bintray_url))
+
+    try:
+        response = urllib.request.urlopen(bintray_url, headers=headers)
+        files = json.loads(response.read())
+
+        for existing_file in files:
+            if "name" not in existing_file:
+                logging.debug(
+                    'Item from json response does not seem to have a "name" item'
+                )
+                continue
+            if existing_file["name"] == os.path.basename(args.filename):
+                logging.info('{} already exists'.format(args.filename))
+                return 10
+
+        return 0
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            logging.info('{} does not exist'.format(args.filename))
+            return 0
+        else:
+            logging.error(
+                'Failed to check if file exists with bintray: response code {}'
+                .format(e.code))
+            raise
 
 
 def uploadToBintray(args, override=False):
@@ -73,11 +110,17 @@ def main():
     parser.add_argument('--bintray_repo',
                         default=os.environ.get("BINTRAY_REPO", "getenvoy"))
     parser.add_argument('--bintray_pkg', default=os.environ.get("BINTRAY_PKG"))
+    parser.add_argument('--check_nonexisting',
+                        action='store_true',
+                        default=False)
     parser.add_argument('filename')
 
     args = parser.parse_args()
 
-    uploadToBintray(args, override=args.override)
+    if args.check_nonexisting:
+        sys.exit(checkBintray(args))
+    else:
+        uploadToBintray(args, override=args.override)
 
 
 if __name__ == "__main__":
