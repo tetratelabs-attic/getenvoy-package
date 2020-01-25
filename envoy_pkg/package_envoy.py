@@ -153,8 +153,6 @@ def bailIfPackagesExist(args, workspace_info):
     ])
     if rc != 0:
         sys.exit(0)
-    else:
-        print('Tar File Name for Symbols could not be generated...')
 
 
 def uploadArtifacts(args, workspace_info):
