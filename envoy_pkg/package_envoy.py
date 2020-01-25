@@ -138,23 +138,34 @@ def storeArtifacts(args, workspace_info):
 
 
 def bailIfPackagesExist(args, workspace_info):
-    subprocess.check_call([
-        './bintray_uploader.py', '--version',
-        version.debVersion(workspace_info), '--check_nonexisting',
-        os.path.join(args.artifacts_directory,
-                     version.tarFileName(workspace_info))
-    ])
-    subprocess.check_call([
-        './bintray_uploader.py', '--version',
-        version.debVersion(workspace_info), '--check_nonexisting',
-        os.path.join(args.artifacts_directory,
-                     version.tarFileName(workspace_info, symbol=True))
-    ])
+    tarFileName = version.tarFileName(workspace_info)
+    if tarFileName is not None:
+        rc = subprocess.call([
+            './bintray_uploader.py', '--version',
+            version.debVersion(workspace_info), '--check_nonexisting',
+            os.path.join(args.artifacts_directory, tarFileName)
+        ])
+        if rc != 0:
+            sys.exit(0)
+    else:
+        print('Tar File Name could not be generated...')
+
+    symbolTarFileName = version.tarFileName(workspace_info, symbol=True)
+    if symbolTarFileName is not None:
+        rc = subprocess.call([
+            './bintray_uploader.py', '--version',
+            version.debVersion(workspace_info), '--check_nonexisting',
+            os.path.join(args.artifacts_directory, symbolTarFileName)
+        ])
+        if rc != 0:
+            sys.exit(0)
+    else:
+        print('Tar File Name for Symbols could not be generated...')
 
 
 def uploadArtifacts(args, workspace_info):
     directory = args.artifacts_directory
-    subprocess.check_call([
+    exists = subprocess.call([
         './bintray_uploader.py',
         '--version',
         version.debVersion(workspace_info),
@@ -162,7 +173,9 @@ def uploadArtifacts(args, workspace_info):
         '--override',
         str(args.override),
     ])
-    subprocess.check_call([
+    if exists != 0:
+        return
+    exists = subprocess.call([
         './bintray_uploader.py',
         '--version',
         version.debVersion(workspace_info),
@@ -171,6 +184,8 @@ def uploadArtifacts(args, workspace_info):
         '--override',
         str(args.override),
     ])
+    if exists != 0:
+        return
     if args.build_deb_package:
         subprocess.check_call([
             './bintray_uploader_deb.py',
