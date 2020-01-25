@@ -138,27 +138,21 @@ def storeArtifacts(args, workspace_info):
 
 
 def bailIfPackagesExist(args, workspace_info):
-    tarFileName = version.tarFileName(workspace_info)
-    if tarFileName is not None:
-        rc = subprocess.call([
-            './bintray_uploader.py', '--version',
-            version.debVersion(workspace_info), '--check_nonexisting',
-            os.path.join(args.artifacts_directory, tarFileName)
-        ])
-        if rc != 0:
-            sys.exit(0)
-    else:
-        print('Tar File Name could not be generated...')
+    rc = subprocess.call([
+        './bintray_uploader.py', '--version',
+        version.debVersion(workspace_info), '--check_nonexisting',
+        os.path.join(args.artifacts_directory, version.tarFileName(workspace_info))
+    ])
+    if rc != 0:
+        sys.exit(0)
 
-    symbolTarFileName = version.tarFileName(workspace_info, symbol=True)
-    if symbolTarFileName is not None:
-        rc = subprocess.call([
-            './bintray_uploader.py', '--version',
-            version.debVersion(workspace_info), '--check_nonexisting',
-            os.path.join(args.artifacts_directory, symbolTarFileName)
-        ])
-        if rc != 0:
-            sys.exit(0)
+    rc = subprocess.call([
+        './bintray_uploader.py', '--version',
+        version.debVersion(workspace_info), '--check_nonexisting',
+        os.path.join(args.artifacts_directory, version.tarFileName(workspace_info, symbol=True))
+    ])
+    if rc != 0:
+        sys.exit(0)
     else:
         print('Tar File Name for Symbols could not be generated...')
 
@@ -308,15 +302,15 @@ def main():
     if args.test_package:
         testPackage(args)
     else:
+        if not args.artifacts_directory:
+            tempdir = tempfile.TemporaryDirectory()
+            args.artifacts_directory = tempdir.name
+            atexit.register(tempdir.cleanup)
         if args.upload and not args.override:
             bailIfPackagesExist(args, workspace_info)
         if args.test_envoy:
             testEnvoy(args)
         buildPackages(args)
-        if not args.artifacts_directory:
-            tempdir = tempfile.TemporaryDirectory()
-            args.artifacts_directory = tempdir.name
-            atexit.register(tempdir.cleanup)
         storeArtifacts(args, workspace_info)
         if args.upload:
             uploadArtifacts(args, workspace_info)
