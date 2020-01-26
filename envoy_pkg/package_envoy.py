@@ -141,7 +141,8 @@ def bailIfPackagesExist(args, workspace_info):
     rc = subprocess.call([
         './bintray_uploader.py', '--version',
         version.debVersion(workspace_info), '--check_nonexisting',
-        os.path.join(args.artifacts_directory, version.tarFileName(workspace_info))
+        os.path.join(args.artifacts_directory,
+                     version.tarFileName(workspace_info))
     ])
     if rc != 0:
         sys.exit(0)
@@ -149,7 +150,8 @@ def bailIfPackagesExist(args, workspace_info):
     rc = subprocess.call([
         './bintray_uploader.py', '--version',
         version.debVersion(workspace_info), '--check_nonexisting',
-        os.path.join(args.artifacts_directory, version.tarFileName(workspace_info, symbol=True))
+        os.path.join(args.artifacts_directory,
+                     version.tarFileName(workspace_info, symbol=True))
     ])
     if rc != 0:
         sys.exit(0)
