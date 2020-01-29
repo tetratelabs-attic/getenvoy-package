@@ -34,7 +34,9 @@ def checkBintray(args):
         'Checking versioned packages files at {}'.format(bintray_url))
 
     try:
-        response = urllib.request.urlopen(bintray_url, headers=headers)
+        request = urllib.request.Request(bintray_url, headers=headers)
+        request.get_method = lambda: 'GET'
+        response = urllib.request.urlopen(request)
         files = json.loads(response.read())
 
         for existing_file in files:
