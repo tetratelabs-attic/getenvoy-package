@@ -6,6 +6,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Local Cache(s)
+scratch/
+
 # testing packaging locally will result following files:
 /envoy_pkg/BUILD_REVISION
 /envoy_pkg/BUILD_RELEASE

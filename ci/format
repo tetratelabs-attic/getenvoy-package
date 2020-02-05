@@ -1,10 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# Ensure if we have to install any packages for deps we can.
+apt-get update
+
+ensureLicenser
+ensureProtoc
+ensurePyDeps
+
 set -ex
 
-find envoy_pkg common -type f -name '*.py' -user "${USER}" | grep -v 'envoy/src' | xargs yapf --in-place
+find envoy_pkg common -type f -name '*.py' | grep -v 'envoy/src' | xargs yapf --in-place
 
 # Generate Protos
 find api -type f -name '*.proto' | xargs protoc --go_out=.
 
 # Apply Licenses
-licenser apply -r "Tetrate"
+scratch/licenser apply -r "Tetrate"

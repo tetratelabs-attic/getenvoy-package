@@ -22,26 +22,16 @@ references:
 
 jobs:
   lint:
-    resource_class: small
-    docker:
-      - image: circleci/python:2.7
+    resource_class: medium
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: true
     steps:
       - checkout
-      - run: sudo pip install yapf flake8
-      - run: ./ci/install-licenser
-      - run: ./ci/lint
-  proto:
-    resource_class: small
-    docker:
-      - image: circleci/golang:1.12.6
-        environment:
-          GO111MODULE: "on"
-    steps:
-      - checkout
-      - run: ./ci/install-proto
-      - run: ./ci/install-licenser
-      - run: ./ci/proto
-
+      - run: curl -sSL -O https://github.com/SecurityInsanity/dev-loop/releases/download/0.1.0/dl-linux
+      - run: chmod +x dl-linux
+      - run: sudo mv dl-linux /usr/local/bin/dl
+      - run: dl exec lint
 
   build_mac:
     <<: *mac
@@ -109,10 +99,7 @@ workflows:
   version: 2
   all:
     jobs:
-      - proto
-      - lint:
-          requires:
-            - proto
+      - lint
       - build_and_test_linux:
           requires:
             - lint

@@ -1,9 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# Ensure if we have to install any packages for deps we can.
+apt-get update
+
+ensureLicenser
+ensurePyDeps
+
 set -ex
 
 # Currently, this just includes format checking, eventually includes lint etc.
-find envoy_pkg common -type f -name '*.py' -user "${USER:-$(id -u -n)}" | grep -v 'envoy/src' | xargs yapf --diff
+find envoy_pkg common -type f -name '*.py' | grep -v 'envoy/src' | xargs yapf --diff
 
 flake8 envoy_pkg common
 
-licenser verify -r .
+scratch/licenser verify -r .
