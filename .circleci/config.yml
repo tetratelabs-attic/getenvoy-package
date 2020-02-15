@@ -87,8 +87,6 @@ jobs:
       - run: |
           echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
           gcloud auth configure-docker
-          gcloud container images add-tag gcr.io/getenvoy-package/build-ubuntu-xenial:$CIRCLE_SHA1 \
-                                          gcr.io/getenvoy-package/build-ubuntu-xenial:latest --quiet
           gcloud container images add-tag gcr.io/getenvoy-package/bazel-linux-glibc:$CIRCLE_SHA1 \
                                           gcr.io/getenvoy-package/build-linux-glibc:latest --quiet
           gcloud container images add-tag gcr.io/getenvoy-package/rbe-linux-glibc:$CIRCLE_SHA1 \
