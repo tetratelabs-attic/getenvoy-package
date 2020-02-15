@@ -13,14 +13,6 @@
 # limitations under the License.
 
 steps:
-- name: gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
-  waitFor: ['-']
-  dir: ../envoy_pkg
-  entrypoint: '/envoy_pkg/package_envoy.py'
-  args: ['--test_package', '--test_distroless']
-  env:
-  - 'ENVOY_DIST=ubuntu-xenial'
-
 - name: gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
   waitFor: ['-']
   dir: ../envoy_pkg
