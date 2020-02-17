@@ -77,7 +77,12 @@ def buildPackages(args):
     if args.build_distroless_docker:
         targets.append("//packages/{}:distroless-package.tar".format(
             args.variant))
-        # targets.append("//packages/{}:distroless-package.digest".format(args.variant))
+    if args.build_istio_compat:
+        targets.append("//packages/{}:istio-tar-package-symbol.tar.gz".format(
+            args.variant))
+        targets.append(
+            "//packages/{}:istio-tar-package-stripped.tar.gz".format(
+                args.variant))
     runBazel('build', targets, options=bazelOptions(args))
     if args.build_rpm_package and args.gpg_secret_key and args.gpg_name:
         signRpmPackage(
@@ -135,6 +140,17 @@ def storeArtifacts(args, workspace_info):
             "bazel-bin/packages/{}/distroless-package.tar".format(
                 args.variant), docker_image_tar)
         subprocess.check_call(['xz', '-f', docker_image_tar])
+    if args.build_istio_compat:
+        shutil.copy(
+            "bazel-bin/packages/{}/istio-tar-package-symbol.tar.gz".format(
+                args.variant),
+            os.path.join(directory,
+                         version.istioTarFileName(workspace_info,
+                                                  symbol=True)))
+        shutil.copy(
+            "bazel-bin/packages/{}/istio-tar-package-stripped.tar.gz".format(
+                args.variant),
+            os.path.join(directory, version.istioTarFileName(workspace_info)))
 
 
 def bailIfPackagesExist(args, workspace_info):
@@ -215,6 +231,28 @@ def uploadArtifacts(args, workspace_info):
             workspace_info['variant'],
             version.dockerTag(workspace_info)
         ])
+    if args.build_istio_compat:
+        subprocess.call([
+            './bintray_uploader.py',
+            '--version',
+            version.debVersion(workspace_info),
+            os.path.join(directory,
+                         version.istioTarFileName(workspace_info,
+                                                  symbol=True)),
+            '--override',
+            str(args.override),
+        ])
+        # Istio doesn't have a concept of debug stripped builds.
+        if workspace_info["release_level"] == "stable":
+            subprocess.call([
+                './bintray_uploader.py',
+                '--version',
+                version.debVersion(workspace_info),
+                os.path.join(directory,
+                             version.istioTarFileName(workspace_info)),
+                '--override',
+                str(args.override),
+            ])
 
 
 def testPackage(args):
@@ -279,6 +317,10 @@ def main():
     parser.add_argument('--build_distroless_docker',
                         action='store_true',
                         default=(os.environ.get("BUILD_DISTROLESS_DOCKER",
+                                                '0') == '1'))
+    parser.add_argument('--build_istio_compat',
+                        action='store_true',
+                        default=(os.environ.get("BUILD_ISTIO_COMPAT",
                                                 '0') == '1'))
     parser.add_argument('--artifacts_directory')
     parser.add_argument('--release_level',

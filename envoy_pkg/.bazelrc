@@ -37,9 +37,7 @@ build:envoy --incompatible_bzl_disallow_load_after_statement=false
 build:istio-proxy --incompatible_depset_union=false
 build:istio-proxy --incompatible_bzl_disallow_load_after_statement=false
 build:istio-proxy --incompatible_disable_deprecated_attr_params=false
-build:istio-proxy --incompatible_string_join_requires_strings=false
 build:istio-proxy --incompatible_require_ctx_in_configure_features=false
-build:istio-proxy --incompatible_depset_is_not_iterable=false
 build:istio-proxy --host_force_python=PY2
 
 # GetEnvoy distributions
