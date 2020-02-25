@@ -38,6 +38,23 @@ def tarFileName(workspace_info, symbol=False):
     return tarDirectory(workspace_info, symbol) + ".tar.xz"
 
 
+def istioTarFileName(workspace_info, symbol=False):
+    fileName = 'envoy-'
+    if workspace_info["release_level"] == "stable":
+        if symbol:
+            fileName += 'symbol-'
+        else:
+            # Istio Release builds are called "alpha", even though they are in
+            # fact, release builds.
+            #
+            # https://github.com/istio/proxy/blob/f03e3302cb968fab920e1a46ea05a9431e218ec5/scripts/release-binary.sh#L105
+            fileName += 'alpha-'
+    else:
+        fileName += 'debug-'
+    fileName += "{}".format(workspace_info["git_revision"])
+    return fileName + ".tar.gz"
+
+
 def debFileName(workspace_info):
     return "_".join([
         "getenvoy-{}".format(workspace_info['variant']),

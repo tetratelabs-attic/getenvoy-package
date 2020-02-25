@@ -58,6 +58,11 @@ def setDefaultArguments(args):
                                                        "ENVOY_REPO")
 
 
+def getGitRevision():
+    return subprocess.check_output(['git', '-C', 'envoy', 'rev-parse',
+                                    'HEAD']).strip().decode('utf-8')
+
+
 def getBuildRevision():
     try:
         with open("BUILD_REVISION", "r") as f:
@@ -81,8 +86,7 @@ def envoyCommitterDate():
 
 
 def writeSourceInfo(variant):
-    revision = subprocess.check_output(
-        ['git', '-C', 'envoy', 'rev-parse', 'HEAD']).strip().decode('utf-8')
+    revision = getGitRevision()
     info = subprocess.call(
         ['git', '-C', 'envoy', 'diff-index', '--quiet', 'HEAD'])
     scm_status = "clean" if info == 0 else "modified"
@@ -100,6 +104,7 @@ def writeSourceInfo(variant):
 def writeVersionBzl(args):
     variant = args.variant
 
+    revision = getGitRevision()
     # rpm doesn't allow '-' in version
     source_version = subprocess.check_output(
         "packages/{}/source_version.sh".format(variant)).strip().decode(
@@ -117,7 +122,9 @@ def writeVersionBzl(args):
                         source_version=source_version,
                         architecture=arch,
                         debian_architecture=deb_arch,
-                        getenvoy_release=package_release)
+                        getenvoy_release=package_release,
+                        release_level=args.release_level,
+                        git_revision=revision)
     with open(WORKSPACE_INFO_FILE, 'w') as version_bzl:
         version_bzl.write("PACKAGE_VERSION = {}\n".format(repr(version_info)))
 
@@ -163,6 +170,14 @@ def setupBazelWorkspace(variant):
         with open('getenvoy.WORKSPACE') as append:
             workspace.write(append.read().replace(
                 '{RBE_IMAGE_TAG}', os.environ.get('RBE_IMAGE_TAG', 'latest')))
+
+    patches = glob.glob("patches/" + variant + "/*.patch")
+    for p in patches:
+        patch_file = open(p)
+        result = subprocess.run(['patch', '-p1', '--ignore-whitespace'],
+                                stdin=patch_file)
+        if result.returncode != 0:
+            raise Exception("Failed to setup workspace")
 
 
 def setup(args):

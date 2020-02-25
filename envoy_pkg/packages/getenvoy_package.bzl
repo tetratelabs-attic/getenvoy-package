@@ -185,6 +185,35 @@ def getenvoy_package(name, binary_target):
         tags = ["manual"],
     )
 
+
+    pkg_tar(
+        name = "istio-tar-package-stripped",
+        extension="tar.gz",
+        srcs=[":envoy"],
+        remap_paths = {
+            "/envoy": "usr/local/bin/envoy",
+        },
+        modes = {
+            "usr/local/bin/envoy": "0755",
+        },
+        package_dir = _tar_dir(PACKAGE_VERSION),
+        tags = ["manual"],
+    )
+
+    pkg_tar(
+        name = "istio-tar-package-symbol",
+        extension = "tar.gz",
+        srcs = [":envoy-symbol"],
+        remap_paths = {
+            "/envoy-symbol": "usr/local/bin/envoy",
+        },
+        modes = {
+            "usr/local/bin/envoy": "0755",
+        },
+        package_dir = _tar_dir(PACKAGE_VERSION, symbol=True),
+        tags = ["manual"],
+    )
+
     native.filegroup(
         name = "all_packages",
         srcs = [
@@ -193,6 +222,8 @@ def getenvoy_package(name, binary_target):
             ":rpm-package.rpm",
             ":deb-package.deb",
             ":distroless-package.tar",
+            ":istio-tar-package-stripped.tar.gz",
+            ":istio-tar-package-symbol.tar.gz",
         ],
         tags = ["manual"],
     )
