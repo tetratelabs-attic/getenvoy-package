@@ -14,26 +14,11 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-SED_CMD = "sed -i.bak " + " ".join(["-e '%s'" % e for e in [
-    's~name = "six"~name = "six_workaround"~',
-    's~\"@six\"~\"@six_workaround\"~',
-    's~if "six" not in excludes~if "six_workaround" not in excludes~',]])
-
-http_archive(
-    name = "containerregistry",
-    sha256 = "a8cdf2452323e0fefa4edb01c08b2ec438c9fa3192bc9f408b89287598c12abc",
-    strip_prefix = "containerregistry-0.0.36",
-    urls = ["https://github.com/google/containerregistry/archive/v0.0.36.tar.gz"],
-    patch_cmds = [SED_CMD + " def.bzl BUILD.bazel"],
-)
-
-# Download the rules_docker repository at release v0.9.0
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "e513c0ac6534810eb7a14bf025a0f159726753f97f74ab7863c650d26e01d677",
-    strip_prefix = "rules_docker-0.9.0",
-    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.9.0/rules_docker-v0.9.0.tar.gz"],
-    patch_cmds = [SED_CMD + " container/BUILD repositories/repositories.bzl"],
+    sha256 = "dc97fccceacd4c6be14e800b2a00693d5e8d07f69ee187babfd04a80a9f8e250",
+    strip_prefix = "rules_docker-0.14.1",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.14.1/rules_docker-v0.14.1.tar.gz"],
 )
 
 load(
@@ -52,7 +37,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 container_pull(
     name = "distroless_base",
-    digest = "sha256:7fa7445dfbebae4f4b7ab0e6ef99276e96075ae42584af6286ba080750d6dfe5", # 2019-10-28
+    digest = "sha256:2b0a8e9a13dcc168b126778d9e947a7081b4d2ee1ee122830d835f176d0e2a70", # 2020-02-27
     registry = "gcr.io",
     repository = "distroless/base",
 )
