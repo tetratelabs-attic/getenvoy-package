@@ -181,7 +181,6 @@ def uploadArtifacts(args, workspace_info):
         version.debVersion(workspace_info),
         os.path.join(directory, version.tarFileName(workspace_info)),
         '--override',
-        str(args.override),
     ])
     if exists != 0:
         return
@@ -192,7 +191,6 @@ def uploadArtifacts(args, workspace_info):
         os.path.join(directory, version.tarFileName(workspace_info,
                                                     symbol=True)),
         '--override',
-        str(args.override),
     ])
     if exists != 0:
         return
@@ -240,7 +238,6 @@ def uploadArtifacts(args, workspace_info):
                          version.istioTarFileName(workspace_info,
                                                   symbol=True)),
             '--override',
-            str(args.override),
         ])
         # Istio doesn't have a concept of debug stripped builds.
         if workspace_info["release_level"] == "stable":
@@ -251,7 +248,6 @@ def uploadArtifacts(args, workspace_info):
                 os.path.join(directory,
                              version.istioTarFileName(workspace_info)),
                 '--override',
-                str(args.override),
             ])
 
 
