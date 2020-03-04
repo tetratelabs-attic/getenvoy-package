@@ -175,13 +175,14 @@ def bailIfPackagesExist(args, workspace_info):
 
 def uploadArtifacts(args, workspace_info):
     directory = args.artifacts_directory
+    override_args = []
+    if args.override:
+        override_args = ['--override']
     exists = subprocess.call([
-        './bintray_uploader.py',
-        '--version',
+        './bintray_uploader.py', '--version',
         version.debVersion(workspace_info),
-        os.path.join(directory, version.tarFileName(workspace_info)),
-        '--override',
-    ])
+        os.path.join(directory, version.tarFileName(workspace_info))
+    ] + override_args)
     if exists != 0:
         return
     exists = subprocess.call([
@@ -190,8 +191,7 @@ def uploadArtifacts(args, workspace_info):
         version.debVersion(workspace_info),
         os.path.join(directory, version.tarFileName(workspace_info,
                                                     symbol=True)),
-        '--override',
-    ])
+    ] + override_args)
     if exists != 0:
         return
     if args.build_deb_package:
@@ -237,18 +237,16 @@ def uploadArtifacts(args, workspace_info):
             os.path.join(directory,
                          version.istioTarFileName(workspace_info,
                                                   symbol=True)),
-            '--override',
-        ])
+        ] + override_args)
         # Istio doesn't have a concept of debug stripped builds.
         if workspace_info["release_level"] == "stable":
             subprocess.call([
                 './bintray_uploader.py',
                 '--version',
                 version.debVersion(workspace_info),
-                os.path.join(directory,
-                             version.istioTarFileName(workspace_info)),
-                '--override',
-            ])
+                os.path.join(directory, version.istioTarFileName(
+                    workspace_info)),
+            ] + override_args)
 
 
 def testPackage(args):
