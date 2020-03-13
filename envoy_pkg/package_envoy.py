@@ -293,8 +293,11 @@ def main():
     parser.add_argument('--nocleanup', action='store_true')
     parser.add_argument('--upload', action='store_true')
     parser.add_argument('--override', action='store_true', default=False)
-    parser.add_argument('--override_envoy_repository')
-    parser.add_argument('--override_envoy_commit')
+    parser.add_argument('--override_envoy_repository',
+                        default=os.environ.get("OVERRIDE_ENVOY_REPOSITORY",
+                                               ''))
+    parser.add_argument('--override_envoy_commit',
+                        default=os.environ.get("OVERRIDE_ENVOY_COMMIT", ''))
     parser.add_argument('--test_distroless', action='store_true')
     parser.add_argument('--test_package', action='store_true')
     parser.add_argument('--test_envoy',
