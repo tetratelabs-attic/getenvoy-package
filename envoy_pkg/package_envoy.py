@@ -57,6 +57,9 @@ def bazelOptions(args):
 
     options['config'].append(args.variant)
     options['config'].append(args.dist)
+    if os.path.isdir('envoy-override'):
+        options['override_repository'].append('envoy=' + os.getcwd() +
+                                              '/envoy-override')
 
     if platform.system() == 'Darwin':
         options['action_env'].append(
@@ -288,6 +291,8 @@ def main():
     parser.add_argument('--nocleanup', action='store_true')
     parser.add_argument('--upload', action='store_true')
     parser.add_argument('--override', action='store_true', default=False)
+    parser.add_argument('--override_envoy_repository')
+    parser.add_argument('--override_envoy_commit')
     parser.add_argument('--test_distroless', action='store_true')
     parser.add_argument('--test_package', action='store_true')
     parser.add_argument('--test_envoy',
