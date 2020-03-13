@@ -58,8 +58,10 @@ def bazelOptions(args):
     options['config'].append(args.variant)
     options['config'].append(args.dist)
     if os.path.isdir('envoy-override'):
-        options['override_repository'].append('envoy=' + os.getcwd() +
-                                              '/envoy-override')
+        # Split up this str + append, otherwise the formatter formats
+        # one way, but lints another way.
+        override_str = 'envoy=' + os.getcwd() + '/envoy-override'
+        options['override_repository'].append(override_str)
 
     if platform.system() == 'Darwin':
         options['action_env'].append(
