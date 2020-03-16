@@ -57,6 +57,11 @@ def bazelOptions(args):
 
     options['config'].append(args.variant)
     options['config'].append(args.dist)
+    if os.path.isdir('envoy-override'):
+        # Split up this str + append, otherwise the formatter formats
+        # one way, but lints another way.
+        override_str = 'envoy=' + os.getcwd() + '/envoy-override'
+        options['override_repository'].append(override_str)
 
     if platform.system() == 'Darwin':
         options['action_env'].append(
@@ -288,6 +293,11 @@ def main():
     parser.add_argument('--nocleanup', action='store_true')
     parser.add_argument('--upload', action='store_true')
     parser.add_argument('--override', action='store_true', default=False)
+    parser.add_argument('--override_envoy_repository',
+                        default=os.environ.get("OVERRIDE_ENVOY_REPOSITORY",
+                                               ''))
+    parser.add_argument('--override_envoy_commit',
+                        default=os.environ.get("OVERRIDE_ENVOY_COMMIT", ''))
     parser.add_argument('--test_distroless', action='store_true')
     parser.add_argument('--test_package', action='store_true')
     parser.add_argument('--test_envoy',

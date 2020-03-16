@@ -35,6 +35,7 @@ WORKSPACE_INFO_FILE = "workspace_info.bzl"
 
 def cleanup():
     shutil.rmtree("envoy", True)
+    shutil.rmtree("envoy-override", True)
     try:
         os.remove("WORKSPACE")
         os.remove("SOURCE_VERSION")
@@ -47,6 +48,15 @@ def cloneEnvoy(args):
     subprocess.check_call(['git', 'clone', args.envoy_repo, 'envoy'])
     subprocess.check_call(
         ['git', '-C', 'envoy', 'checkout', args.envoy_commit])
+
+    if args.override_envoy_repository and args.override_envoy_repository != '':
+        repository = args.override_envoy_repository
+        commit = 'master'
+        if args.override_envoy_commit and args.override_envoy_commit != '':
+            commit = args.override_envoy_commit
+        subprocess.check_call(['git', 'clone', repository, 'envoy-override'])
+        subprocess.check_call(
+            ['git', '-C', 'envoy-override', 'checkout', commit])
 
 
 def getDefaultArg(variant, name):
@@ -197,6 +207,8 @@ def main():
     parser.add_argument('--envoy_commit',
                         default=os.environ.get("ENVOY_COMMIT", 'master'))
     parser.add_argument('--envoy_repo')
+    parser.add_argument('--override_envoy_repository')
+    parser.add_argument('--override_envoy_commit')
     parser.add_argument('--dist',
                         default='unknown-{}'.format(platform.system().lower()))
     parser.add_argument('--tar_suffix', default='default')

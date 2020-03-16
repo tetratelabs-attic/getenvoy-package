@@ -13,6 +13,7 @@ __pycache__/
 /envoy_pkg/SOURCE_VERSION
 /envoy_pkg/WORKSPACE
 /envoy_pkg/envoy
+/envoy_pkg/envoy-override
 /envoy_pkg/*.tar.gz
 /envoy_pkg/*.rpm
 /envoy_pkg/*.deb
