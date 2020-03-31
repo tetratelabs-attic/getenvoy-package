@@ -19,6 +19,7 @@ references:
     macos:
       xcode: '11.3.1'
     working_directory: ~/envoy-package
+    resource_class: large
 
 jobs:
   lint:

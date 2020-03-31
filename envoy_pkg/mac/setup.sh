@@ -24,3 +24,5 @@ brew update
 brew upgrade
 brew tap bazelbuild/tap
 brew install bazelbuild/tap/bazelisk cmake coreutils go libtool ninja wget
+
+bazel version
