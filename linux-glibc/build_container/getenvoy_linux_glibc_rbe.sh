@@ -19,7 +19,7 @@ set -e
 yum install -y centos-release-scl epel-release
 yum update -y
 yum install -y devtoolset-7-gcc-c++ devtoolset-7-libatomic-devel rsync rh-git218 wget unzip which make cmake3 patch ninja-build openssl python27 \
-          libtool autoconf tcpdump
+          python36 libtool autoconf tcpdump
 
 ln -s /usr/bin/cmake3 /usr/bin/cmake
 ln -s /usr/bin/ninja-build /usr/bin/ninja
