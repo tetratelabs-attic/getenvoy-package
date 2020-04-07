@@ -25,6 +25,7 @@ load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",
     container_repositories = "repositories",
 )
+
 container_repositories()
 
 # This is NOT needed when going through the language lang_image
@@ -37,7 +38,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 container_pull(
     name = "distroless_base",
-    digest = "sha256:2b0a8e9a13dcc168b126778d9e947a7081b4d2ee1ee122830d835f176d0e2a70", # 2020-02-27
+    digest = "sha256:2b0a8e9a13dcc168b126778d9e947a7081b4d2ee1ee122830d835f176d0e2a70",  # 2020-02-27
     registry = "gcr.io",
     repository = "distroless/base",
 )
@@ -53,8 +54,21 @@ rbe_autoconfig(
     name = "rbe_linux_glibc",
     create_java_configs = False,
     env = rbe_envs(),
-    tag = "{RBE_IMAGE_TAG}",
     registry = "gcr.io",
     repository = "getenvoy-package/rbe-linux-glibc",
+    tag = "{RBE_IMAGE_TAG}",
     use_checked_in_confs = "False",
 )
+
+http_archive(
+    name = "rules_pkg",
+    sha256 = "352c090cc3d3f9a6b4e676cf42a6047c16824959b438895a76c2989c6d7c246a",
+    urls = [
+        "https://github.com/bazelbuild/rules_pkg/releases/download/0.2.5/rules_pkg-0.2.5.tar.gz",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_pkg/releases/download/0.2.5/rules_pkg-0.2.5.tar.gz",
+    ],
+)
+
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+
+rules_pkg_dependencies()
