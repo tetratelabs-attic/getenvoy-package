@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-package(default_visibility = ["//visibility:public"])
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
-load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_deb", "pkg_tar")
+package(default_visibility = ["//visibility:public"])
 
 pkg_tar(
     name = "libcxx",

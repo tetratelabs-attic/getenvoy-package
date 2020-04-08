@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-licenses(["notice"])  # Apache 2
-
 load(
     "@envoy//bazel:envoy_build_system.bzl",
     "envoy_cc_binary",
 )
+load("//packages:getenvoy_package.bzl", "getenvoy_package")
+
+licenses(["notice"])  # Apache 2
 
 envoy_cc_binary(
     name = "version_info",
@@ -47,8 +48,6 @@ sh_test(
     srcs = ["version_test.sh"],
     data = [":version_info"],
 )
-
-load("//packages:getenvoy_package.bzl", "getenvoy_package")
 
 getenvoy_package(
     name = "test",
