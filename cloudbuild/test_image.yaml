@@ -25,7 +25,7 @@ steps:
   waitFor: ['-']
   dir: ../envoy_pkg
   entrypoint: '/envoy_pkg/package_envoy.py'
-  args: ['--build_deb_package', '--build_distroless_docker']
+  args: ['--build_deb_package', '--build_rpm_package', '--build_distroless_docker']
   env:
   - 'ENVOY_DIST=linux-glibc'
 
