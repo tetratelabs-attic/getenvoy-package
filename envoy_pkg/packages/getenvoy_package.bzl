@@ -14,7 +14,7 @@
 
 load("@io_bazel_rules_docker//container:container.bzl", "container_bundle", "container_image")
 load("@rules_pkg//:pkg.bzl", "pkg_deb", _pkg_tar = "pkg_tar")
-load("@rules_pkg//:rpm.bzl", "pkg_rpm")
+load("@bazel_tools//tools/build_defs/pkg:rpm.bzl", "pkg_rpm")
 load("//:workspace_info.bzl", "PACKAGE_VERSION")
 load("//python/getenvoy:version.bzl", _deb_version = "debVersion", _docker_tag = "dockerTag", _tar_dir = "tarDirectory")
 
