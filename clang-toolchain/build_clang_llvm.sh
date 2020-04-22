@@ -16,11 +16,11 @@
 
 set -e
 
-curl -sSL https://raw.githubusercontent.com/llvm/llvm-project/llvmorg-9.0.0/llvm/utils/release/test-release.sh | sed 's,http://llvm.org,https://llvm.org,' > /home/build/test-release.sh
+curl -sSL https://raw.githubusercontent.com/llvm/llvm-project/llvmorg-10.0.0/llvm/utils/release/test-release.sh | sed 's,http://llvm.org,https://llvm.org,' > /home/build/test-release.sh
 chmod +x /home/build/test-release.sh
 
 mkdir -p ${BUILD_DIR}
 chown build:build ${BUILD_DIR}
 
-sudo -u build scl enable devtoolset-7 \
-  "/home/build/test-release.sh -release 9.0.0 -final -triple x86_64-linux-centos7 -configure-flags '-DCOMPILER_RT_BUILD_LIBFUZZER=off' -build-dir ${BUILD_DIR}"
+sudo -u build scl enable devtoolset-9 \
+  "/home/build/test-release.sh -release 10.0.0 -final -triple x86_64-linux-centos7 -configure-flags '-DCOMPILER_RT_BUILD_LIBFUZZER=off' -build-dir ${BUILD_DIR}"
