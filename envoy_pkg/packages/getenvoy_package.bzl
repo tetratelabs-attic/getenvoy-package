@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_deb", _pkg_tar = "pkg_tar")
-load("@bazel_tools//tools/build_defs/pkg:rpm.bzl", "pkg_rpm")
 load("@io_bazel_rules_docker//container:container.bzl", "container_bundle", "container_image")
+load("@rules_pkg//:pkg.bzl", "pkg_deb", _pkg_tar = "pkg_tar")
+load("@bazel_tools//tools/build_defs/pkg:rpm.bzl", "pkg_rpm")
 load("//:workspace_info.bzl", "PACKAGE_VERSION")
-load("//python/getenvoy:version.bzl", _tar_dir = "tarDirectory", _deb_version = "debVersion", _docker_tag = "dockerTag")
+load("//python/getenvoy:version.bzl", _deb_version = "debVersion", _docker_tag = "dockerTag", _tar_dir = "tarDirectory")
 
 def pkg_tar(**kwargs):
     _pkg_tar(mtime = int(PACKAGE_VERSION["envoy_committer_date"]), portable_mtime = False, **kwargs)
@@ -70,7 +70,7 @@ def getenvoy_package(name, binary_target):
         modes = {
             "bin/envoy": "0755",
         },
-        package_dir = _tar_dir(PACKAGE_VERSION, symbol=True),
+        package_dir = _tar_dir(PACKAGE_VERSION, symbol = True),
         tags = ["manual"],
     )
 
@@ -185,11 +185,10 @@ def getenvoy_package(name, binary_target):
         tags = ["manual"],
     )
 
-
     pkg_tar(
         name = "istio-tar-package-stripped",
-        extension="tar.gz",
-        srcs=[":envoy"],
+        extension = "tar.gz",
+        srcs = [":envoy"],
         remap_paths = {
             "/envoy": "usr/local/bin/envoy",
         },
@@ -210,7 +209,7 @@ def getenvoy_package(name, binary_target):
         modes = {
             "usr/local/bin/envoy": "0755",
         },
-        package_dir = _tar_dir(PACKAGE_VERSION, symbol=True),
+        package_dir = _tar_dir(PACKAGE_VERSION, symbol = True),
         tags = ["manual"],
     )
 
