@@ -25,6 +25,7 @@ from functools import reduce
 DISTRIBUTIONS = [
     'xenial',  # Ubuntu 16.04
     'bionic',  # Ubuntu 18.04
+    'focal',  # Ubuntu 20.04
     'jessie',  # Debian 8
     'stretch',  # Debian 9
     'buster',  # Debian 10
