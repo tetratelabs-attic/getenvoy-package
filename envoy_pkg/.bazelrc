@@ -33,6 +33,7 @@ build:release-fips --define boringssl=fips
 test --test_env=ENVOY_IP_TEST_VERSIONS=v4only
 
 # GetEnvoy variants
+build:envoy --announce_rc
 build:istio-proxy --incompatible_depset_union=false
 build:istio-proxy --incompatible_disable_deprecated_attr_params=false
 build:istio-proxy --host_force_python=PY2
