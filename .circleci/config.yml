@@ -25,10 +25,10 @@ jobs:
   lint:
     resource_class: small
     docker:
-      - image: circleci/python:2.7
+      - image: circleci/python:3.8
     steps:
       - checkout
-      - run: sudo pip install yapf flake8
+      - run: sudo pip3 install yapf flake8
       - run: ./ci/install-licenser
       - run: ./ci/lint
   proto:
