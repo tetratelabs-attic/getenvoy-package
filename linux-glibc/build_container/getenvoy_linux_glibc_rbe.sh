@@ -22,7 +22,6 @@ yum install -y devtoolset-7-gcc-c++ devtoolset-7-libatomic-devel rsync rh-git218
           python36 libtool autoconf tcpdump
 
 ln -s /usr/bin/cmake3 /usr/bin/cmake
-ln -s /usr/bin/ninja-build /usr/bin/ninja
 
 curl -sSL http://storage.googleapis.com/getenvoy-package/clang-toolchain/0e9d364b7199f3aaecbaf914cea3d9df4e97b850/clang+llvm-9.0.0-x86_64-linux-centos7.tar.xz | \
   tar Jx --strip-components=1 -C /usr/local
@@ -43,8 +42,8 @@ yum install -y rpm-build rpm-sign
 yum clean all
 
 # bazelisk
-VERSION=1.0
-SHA256=820f1432bb729cf1d51697a64ce57c0cff7ea4013acaf871b8c24b6388174d0d
+VERSION=1.5.0
+SHA256=605c4b417654a09febc7e15c6b802195fdd1c4fe8d876145fb15f10d4fa27b5b
 curl --location --output /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v${VERSION}/bazelisk-linux-amd64 \
   && echo "$SHA256  /usr/local/bin/bazel" | sha256sum --check \
   && chmod +x /usr/local/bin/bazel
