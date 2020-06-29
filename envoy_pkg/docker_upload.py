@@ -91,7 +91,7 @@ def main():
 
     if args.bintray_auth:
         uploadToBintrayDocker(args)
-    if args.dockerhub_auth:
+    if args.dockerhub_auth and not os.environ.get("NODOCKERHUB_PUSH", False):
         uploadToDockerHub(args)
 
 
