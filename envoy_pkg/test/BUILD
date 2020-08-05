@@ -14,6 +14,7 @@
 
 load(
     "@envoy//bazel:envoy_build_system.bzl",
+    "envoy_basic_cc_library",
     "envoy_cc_binary",
 )
 load("//packages:getenvoy_package.bzl", "getenvoy_package")
