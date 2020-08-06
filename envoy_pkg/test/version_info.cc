@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "common/common/compiler_requirements.h"
-#include "common/common/version.h"
+#include "common/version/version.h"
 
 #include "event2/event.h"
 #include "nghttp2/nghttp2.h"
