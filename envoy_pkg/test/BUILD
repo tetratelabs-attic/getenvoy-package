@@ -14,6 +14,7 @@
 
 load(
     "@envoy//bazel:envoy_build_system.bzl",
+    "envoy_basic_cc_library",
     "envoy_cc_binary",
 )
 load("//packages:getenvoy_package.bzl", "getenvoy_package")
@@ -33,8 +34,15 @@ envoy_cc_binary(
     stamped = True,
     deps = [
         "@envoy//source/common/common:compiler_requirements_lib",
-        "@envoy//source/common/common:version_lib",
+        "@envoy//source/common/version:version_lib",
+        ":version_linkstamp",
     ],
+)
+
+envoy_basic_cc_library(
+    name = "version_linkstamp",
+    linkstamp = "version_linkstamp.cc",
+    alwayslink = 1,
 )
 
 sh_test(

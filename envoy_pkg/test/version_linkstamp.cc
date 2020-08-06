@@ -1,4 +1,4 @@
-// Copyright 2019 Tetrate
+// Copyright 2020 Tetrate
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "common/common/compiler_requirements.h"
-#include "common/version/version.h"
+// NOLINT(namespace-envoy)
+extern const char build_scm_revision[];
+extern const char build_scm_status[];
 
-#include "event2/event.h"
-#include "nghttp2/nghttp2.h"
-
-#include <iostream>
-
-int main() {
-  static_assert(LIBEVENT_VERSION_NUMBER > 0x02010000, "libevent doesn't exists");
-  static_assert(NGHTTP2_VERSION_NUM > 0x012100, "nghttp2 doesn't exists");
-
-  std::cout << Envoy::VersionInfo::version() << std::endl;
-}
+const char build_scm_revision[] = BUILD_SCM_REVISION;
+const char build_scm_status[] = BUILD_SCM_STATUS;
