@@ -35,8 +35,8 @@ apt-get update && apt-get -y install docker-ce docker-ce-cli containerd.io
 apt-get clean
 
 # bazelisk
-VERSION=1.5.0
-SHA256=605c4b417654a09febc7e15c6b802195fdd1c4fe8d876145fb15f10d4fa27b5b
+VERSION=1.6.0
+SHA256=616f65bcdcfd134a19d5d86c591c35098d7732be26145bf06f02ec9e3e52700c
 curl --location --output /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v${VERSION}/bazelisk-linux-amd64 \
   && echo "$SHA256  /usr/local/bin/bazel" | sha256sum --check \
   && chmod +x /usr/local/bin/bazel
