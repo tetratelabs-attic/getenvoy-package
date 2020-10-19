@@ -53,6 +53,7 @@ bazel_toolchains_repositories()
 
 load("//bazel:rbe_envs.bzl", "rbe_envs")
 load("@bazel_toolchains//rules:rbe_repo.bzl", "rbe_autoconfig")
+load("@bazel_toolchains//rules/exec_properties:exec_properties.bzl", "create_rbe_exec_properties_dict")
 
 rbe_autoconfig(
     name = "rbe_linux_glibc",
@@ -60,6 +61,8 @@ rbe_autoconfig(
     env = rbe_envs(),
     registry = "gcr.io",
     repository = "getenvoy-package/rbe-linux-glibc",
+    use_legacy_platform_definition = False,
+    exec_properties = create_rbe_exec_properties_dict(docker_add_capabilities = "SYS_PTRACE,NET_RAW,NET_ADMIN", docker_network = "standard"),
     tag = "{RBE_IMAGE_TAG}",
     use_checked_in_confs = "False",
 )
