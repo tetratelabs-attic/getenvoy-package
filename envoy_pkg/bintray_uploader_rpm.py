@@ -53,6 +53,10 @@ DIST_RELEASE_PAIRS = [
         'dist': 'rhel',
         'releasever': '8Server'
     },
+    {
+        'dist': 'opensuse',
+        'releasever': '15.2'
+    }
 ]
 
 
