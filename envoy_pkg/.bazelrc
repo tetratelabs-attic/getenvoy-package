@@ -31,6 +31,7 @@ build:release-fips --config=release
 build:release-fips --define boringssl=fips
 
 test --test_env=ENVOY_IP_TEST_VERSIONS=v4only
+test --flaky_test_attempts=2
 
 # GetEnvoy variants
 build:envoy --announce_rc
@@ -69,7 +70,7 @@ build:linux-glibc --remote_cache=grpcs://remotebuildexecution.googleapis.com
 build:linux-glibc --remote_executor=grpcs://remotebuildexecution.googleapis.com
 build:linux-glibc --remote_instance_name=projects/getenvoy-package/instances/default_instance
 build:linux-glibc --jobs=80
-build:linux-glibc --experimental_remote_download_outputs=all
+build:linux-glibc --remote_download_outputs=all
 
 build:linux-glibc-docker --experimental_docker_image=gcr.io/getenvoy-package/rbe-linux-glibc@sha256:d375e3d9b7768d7dd033c44a8f19e6258caa98b5e5e39875bc81efe1ef33ad18
 build:linux-glibc-docker --config=linux-glibc-toolchain
