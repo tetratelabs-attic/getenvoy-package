@@ -16,8 +16,8 @@
 
 set -ex
 
-INPUT=$(realpath $1)
-OUTPUT=$(realpath $2)
+INPUT=$1
+OUTPUT=$2
 
 tar xf ${INPUT}
 tar cf ${OUTPUT} envoy_pkg

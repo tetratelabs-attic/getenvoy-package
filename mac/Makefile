@@ -17,8 +17,7 @@ OUTPUT_DIR ?= ../build-image
 SHA = $(shell git rev-parse HEAD)
 DISTRO = mac
 
-$(OUTPUT_DIR)/$(DISTRO)/envoy-package-build.tar: $(OUTPUT_DIR)/$(DISTRO)/build-context.tar $(OUTPUT_DIR)/envoy
-	@$(OUTPUT_DIR)/envoy/ci/mac_ci_setup.sh
+$(OUTPUT_DIR)/$(DISTRO)/envoy-package-build.tar: $(OUTPUT_DIR)/$(DISTRO)/build-context.tar
 	@./build_deps_mac.sh $(OUTPUT_DIR)/$(DISTRO)/build-context.tar $@
 
 $(OUTPUT_DIR)/$(DISTRO)/build-context.tar: $(OUTPUT_DIR)/common-context.tar

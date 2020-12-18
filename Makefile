@@ -16,7 +16,7 @@ UNAME := $(shell uname)
 OUTPUT_DIR ?= $(PWD)/build-image
 
 ifeq ($(UNAME), Linux)
-TARGETS := ubuntu-xenial alpine linux-glibc
+TARGETS := linux-glibc
 endif
 ifeq ($(UNAME), Darwin)
 TARGETS := mac
@@ -28,7 +28,7 @@ all: $(TARGETS)
 $(OUTPUT_DIR):
 	mkdir -p $(OUTPUT_DIR)
 
-.PHONY: common ubuntu-xenial mac
+.PHONY: common mac
 common: $(OUTPUT_DIR)
 	cd common && $(MAKE)
 

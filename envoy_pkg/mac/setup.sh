@@ -22,7 +22,9 @@ brew unlink python@2
 
 brew update
 brew upgrade
-brew tap bazelbuild/tap
-brew install bazelbuild/tap/bazelisk cmake coreutils go libtool ninja wget
+brew install cmake coreutils go libtool ninja wget
+
+brew reinstall --force bazelisk
+brew link --overwrite bazelisk
 
 bazel version
