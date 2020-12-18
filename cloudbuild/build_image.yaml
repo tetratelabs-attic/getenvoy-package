@@ -25,18 +25,12 @@ steps:
   name: make
   args: ['common']
 
-- id: build-ubuntu-xenial
-  waitFor: ['common']
-  name: make
-  args: ['ubuntu-xenial']
-
 - id: rbe-linux-glibc
   waitFor: ['common']
   name: make
   args: ['linux-glibc']
 
 images:
-  - gcr.io/getenvoy-package/build-ubuntu-xenial:$_GIT_SHA
   - gcr.io/getenvoy-package/rbe-linux-glibc:$_GIT_SHA
   - gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
 options:
