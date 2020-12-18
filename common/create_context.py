@@ -61,21 +61,14 @@ def putBuildReleaseFile():
 
 def main():
     parser = argparse.ArgumentParser(description="Envoy build context builder")
-    parser.add_argument('--envoy_dir')
     parser.add_argument('--output')
 
     args = parser.parse_args()
-
-    envoy = args.envoy_dir
 
     build_revision_file = putBuildRevisionFile()
     build_date_file = putBuildDateFile()
     build_release_file = putBuildReleaseFile()
     with tarfile.open(args.output, mode='w') as output:
-        output.add(os.path.join(envoy, 'ci', 'build_container'),
-                   arcname='build_container',
-                   filter=lambda x: None if x.name in EXCLUDED_FILES else x)
-        output.add('build_container')
         output.add(os.path.join('..', 'envoy_pkg'), arcname='envoy_pkg')
         output.add(build_revision_file, arcname='envoy_pkg/BUILD_REVISION')
         output.add(build_date_file, arcname='envoy_pkg/BUILD_DATE')
