@@ -18,7 +18,7 @@ set -ex
 
 # Homebrew made python@3 default though Circle has python@2 linked. This
 # is a workaround for that.
-brew unlink python@2
+brew unlink python@2 || true
 
 brew update
 brew upgrade
