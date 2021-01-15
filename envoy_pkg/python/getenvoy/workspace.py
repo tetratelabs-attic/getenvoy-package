@@ -181,6 +181,9 @@ def setupBazelWorkspace(variant):
             workspace.write(append.read().replace(
                 '{RBE_IMAGE_TAG}', os.environ.get('RBE_IMAGE_TAG', 'latest')))
 
+    if variant == "istio-proxy":
+        shutil.copyfile('envoy/envoy.bazelrc', 'envoy.bazelrc')
+
     patches = glob.glob("patches/" + variant + "/*.patch")
     for p in patches:
         patch_file = open(p)

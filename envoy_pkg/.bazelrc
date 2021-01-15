@@ -35,9 +35,7 @@ test --flaky_test_attempts=2
 
 # GetEnvoy variants
 build:envoy --announce_rc
-build:istio-proxy --incompatible_depset_union=false
-build:istio-proxy --incompatible_disable_deprecated_attr_params=false
-build:istio-proxy --host_force_python=PY2
+build:istio-proxy --announce_rc
 
 # GetEnvoy distributions
 build:alpine --define=tcmalloc=disabled --define=signal_trace=disabled
