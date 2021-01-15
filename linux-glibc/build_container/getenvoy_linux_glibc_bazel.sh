@@ -18,7 +18,6 @@ set -e
 
 export DEBIAN_FRONTEND=noninteractive
 
-
 apt-get -y update
 
 apt-get install -y --no-install-recommends curl wget make git python python-pip python-setuptools python3 python3-pip \
