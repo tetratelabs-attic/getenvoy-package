@@ -27,9 +27,6 @@ build:release --compilation_mode=opt
 build:release --strip=never
 build:release --copt=-ggdb3
 
-build:release-fips --config=release
-build:release-fips --define boringssl=fips
-
 test --test_env=ENVOY_IP_TEST_VERSIONS=v4only
 test --flaky_test_attempts=2
 
@@ -42,16 +39,24 @@ build:alpine --define=tcmalloc=disabled --define=signal_trace=disabled
 build:alpine --linkopt -static --linkopt=-lstdc++ --linkopt=-lm --linkopt -lexecinfo --linkopt -Wl,--allow-multiple-definition
 build:alpine --linkopt -fuse-ld=gold
 
-build:linux-glibc-toolchain --config=libc++
-build:linux-glibc-toolchain --host_javabase=@bazel_tools//tools/jdk:remote_jdk11
-build:linux-glibc-toolchain --javabase=@bazel_tools//tools/jdk:remote_jdk11
+build:linux-glibc-toolchain-common --config=libc++
+build:linux-glibc-toolchain-common --host_javabase=@bazel_tools//tools/jdk:remote_jdk11
+build:linux-glibc-toolchain-common --javabase=@bazel_tools//tools/jdk:remote_jdk11
+build:linux-glibc-toolchain-common --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build:linux-glibc-toolchain-common --define force_libcpp=enabled
+build:linux-glibc-toolchain-common --action_env=CC=clang --action_env=CXX=clang++
+
+build:linux-glibc-toolchain --config=linux-glibc-toolchain-common
 build:linux-glibc-toolchain --host_platform=@rbe_linux_glibc//config:platform
 build:linux-glibc-toolchain --platforms=@rbe_linux_glibc//config:platform
-build:linux-glibc-toolchain --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 build:linux-glibc-toolchain --crosstool_top=@rbe_linux_glibc//cc:toolchain
 build:linux-glibc-toolchain --extra_toolchains=@rbe_linux_glibc//config:cc-toolchain
-build:linux-glibc-toolchain --action_env=CC=clang --action_env=CXX=clang++
-build:linux-glibc-toolchain --define force_libcpp=enabled
+
+build:linux-glibc-fips-toolchain --config=linux-glibc-toolchain-common
+build:linux-glibc-fips-toolchain --host_platform=@rbe_linux_glibc//config:platform
+build:linux-glibc-fips-toolchain --platforms=@rbe_linux_glibc//config:platform
+build:linux-glibc-fips-toolchain --crosstool_top=@rbe_linux_glibc//cc:toolchain
+build:linux-glibc-fips-toolchain --extra_toolchains=@rbe_linux_glibc//config:cc-toolchain
 
 build:remote --spawn_strategy=remote,sandboxed,local
 build:remote --strategy=Javac=remote,sandboxed,local
@@ -61,14 +66,18 @@ build:remote --remote_timeout=3600
 build:remote --auth_enabled=true
 build:remote --experimental_inmemory_jdeps_files
 build:remote --experimental_inmemory_dotd_files
+build:remote --jobs=80
+build:remote --remote_cache=grpcs://remotebuildexecution.googleapis.com
+build:remote --remote_instance_name=projects/getenvoy-package/instances/default_instance
+build:remote --remote_executor=grpcs://remotebuildexecution.googleapis.com
+build:remote --remote_download_outputs=all
 
 build:linux-glibc --config=linux-glibc-toolchain
 build:linux-glibc --config=remote
-build:linux-glibc --remote_cache=grpcs://remotebuildexecution.googleapis.com
-build:linux-glibc --remote_executor=grpcs://remotebuildexecution.googleapis.com
-build:linux-glibc --remote_instance_name=projects/getenvoy-package/instances/default_instance
-build:linux-glibc --jobs=80
-build:linux-glibc --remote_download_outputs=all
+
+build:linux-glibc-fips --config=linux-glibc-fips-toolchain
+build:linux-glibc-fips --define boringssl=fips
+build:linux-glibc-fips --config=remote
 
 build:linux-glibc-docker --experimental_docker_image=gcr.io/getenvoy-package/rbe-linux-glibc@sha256:d375e3d9b7768d7dd033c44a8f19e6258caa98b5e5e39875bc81efe1ef33ad18
 build:linux-glibc-docker --config=linux-glibc-toolchain

@@ -17,6 +17,8 @@ DISTRO = linux-glibc
 SHA = $(shell git rev-parse HEAD)
 RBE_IMAGE = gcr.io/getenvoy-package/rbe-$(DISTRO)
 RBE_TAG = $(RBE_IMAGE):$(SHA)
+RBE_FIPS_IMAGE = gcr.io/getenvoy-package/rbe-$(DISTRO)-fips
+RBE_FIPS_TAG = $(RBE_FIPS_IMAGE):$(SHA)
 BAZEL_IMAGE = gcr.io/getenvoy-package/bazel-$(DISTRO)
 BAZEL_TAG = $(BAZEL_IMAGE):$(SHA)
 
@@ -32,6 +34,11 @@ $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-rbe.tar: build_container/getenvoy_li
 	@docker build . -t $(RBE_TAG) -f Dockerfile.rbe
 	@docker save $(RBE_TAG) -o $@
 
+$(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-rbe-fips.tar: build_container/getenvoy_linux_glibc_bazel.sh build_container/getenvoy_linux_glibc_rbe_fips.sh  Dockerfile.rbe-fips
+	@mkdir -p $(OUTPUT_DIR)/$(DISTRO)
+	@docker build . -t $(RBE_FIPS_TAG) -f Dockerfile.rbe-fips
+	@docker save $(RBE_FIPS_TAG) -o $@
+
 $(OUTPUT_DIR)/$(DISTRO)/bazel-docker-context.tar: $(OUTPUT_DIR)/common-context.tar build_container/getenvoy_linux_glibc_bazel.sh Dockerfile.bazel
 	@mkdir -p $(OUTPUT_DIR)/$(DISTRO)
 	@cp $(OUTPUT_DIR)/common-context.tar $@
@@ -39,9 +46,11 @@ $(OUTPUT_DIR)/$(DISTRO)/bazel-docker-context.tar: $(OUTPUT_DIR)/common-context.t
 	@tar -r Dockerfile.bazel -f $@
 
 .PHONY: push
-push: $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-rbe.tar $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-bazel.tar
+push: $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-rbe.tar $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-rbe-fips.tar $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-bazel.tar
 	@docker load -i $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-rbe.tar 
 	@docker push $(RBE_TAG)
+	@docker load -i $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-rbe-fips.tar
+	@docker push $(RBE_FIPS_TAG)
 	@docker load -i $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build-bazel.tar 
 	@docker push $(BAZEL_TAG)
 
@@ -50,6 +59,9 @@ release:
 	@docker pull $(RBE_TAG)
 	@docker tag $(RBE_TAG) $(RBE_IMAGE):latest
 	@docker push $(RBE_IMAGE):latest
+	@docker pull $(RBE_FIPS_TAG)
+	@docker tag $(RBE_FIPS_TAG) $(RBE_FIPS_IMAGE):latest
+	@docker push $(RBE_FIPS_IMAGE):latest
 	@docker pull $(BAZEL_TAG)
 	@docker tag $(BAZEL_TAG) $(BAZEL_IMAGE):latest
 	@docker push $(BAZEL_IMAGE):latest
