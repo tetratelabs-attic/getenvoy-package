@@ -16,5 +16,5 @@ load("//packages:getenvoy_package.bzl", "getenvoy_package")
 
 getenvoy_package(
     name = "istio-proxy",
-    binary_target = "@proxy//src/envoy:envoy",
+    binary_target = "@io_istio_proxy//src/envoy:envoy",
 )
