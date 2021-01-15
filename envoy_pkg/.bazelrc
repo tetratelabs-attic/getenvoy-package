@@ -53,10 +53,10 @@ build:linux-glibc-toolchain --crosstool_top=@rbe_linux_glibc//cc:toolchain
 build:linux-glibc-toolchain --extra_toolchains=@rbe_linux_glibc//config:cc-toolchain
 
 build:linux-glibc-fips-toolchain --config=linux-glibc-toolchain-common
-build:linux-glibc-fips-toolchain --host_platform=@rbe_linux_glibc//config:platform
-build:linux-glibc-fips-toolchain --platforms=@rbe_linux_glibc//config:platform
-build:linux-glibc-fips-toolchain --crosstool_top=@rbe_linux_glibc//cc:toolchain
-build:linux-glibc-fips-toolchain --extra_toolchains=@rbe_linux_glibc//config:cc-toolchain
+build:linux-glibc-fips-toolchain --host_platform=@rbe_linux_glibc_fips//config:platform
+build:linux-glibc-fips-toolchain --platforms=@rbe_linux_glibc_fips//config:platform
+build:linux-glibc-fips-toolchain --crosstool_top=@rbe_linux_glibc_fips//cc:toolchain
+build:linux-glibc-fips-toolchain --extra_toolchains=@rbe_linux_glibc_fips//config:cc-toolchain
 
 build:remote --spawn_strategy=remote,sandboxed,local
 build:remote --strategy=Javac=remote,sandboxed,local
