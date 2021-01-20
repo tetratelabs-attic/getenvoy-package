@@ -195,7 +195,6 @@ def getenvoy_package(name, binary_target):
         modes = {
             "usr/local/bin/envoy": "0755",
         },
-        package_dir = _tar_dir(PACKAGE_VERSION),
         tags = ["manual"],
     )
 
@@ -209,7 +208,6 @@ def getenvoy_package(name, binary_target):
         modes = {
             "usr/local/bin/envoy": "0755",
         },
-        package_dir = _tar_dir(PACKAGE_VERSION, symbol = True),
         tags = ["manual"],
     )
 
