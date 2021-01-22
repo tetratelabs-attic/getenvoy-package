@@ -21,7 +21,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get -y update
 
 apt-get install -y --no-install-recommends curl wget make git python python-pip python-setuptools python3 python3-pip \
-  unzip bc libtool ninja-build automake zip time gdb strace tshark tcpdump patch xz-utils rsync ssh-client \
+  g++ unzip bc libtool ninja-build automake zip time gdb strace tshark tcpdump patch xz-utils rsync ssh-client \
   software-properties-common apt-transport-https ca-certificates rpm
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
@@ -30,7 +30,10 @@ add-apt-repository \
    $(lsb_release -cs) \
    stable"
 
-apt-get update && apt-get -y install docker-ce docker-ce-cli containerd.io
+curl -fsSL https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add -
+apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
+
+apt-get update && apt-get -y install docker-ce docker-ce-cli containerd.io cmake
 
 apt-get clean
 

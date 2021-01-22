@@ -281,7 +281,7 @@ def main():
                         default="envoy",
                         choices=["envoy", "istio-proxy"])
     parser.add_argument('--envoy_commit',
-                        default=os.environ.get("ENVOY_COMMIT", 'master'))
+                        default=os.environ.get("ENVOY_COMMIT", 'main'))
     parser.add_argument('--envoy_repo')
     parser.add_argument('--local_resources',
                         default=os.environ.get("LOCAL_RESOURCES"))

@@ -32,6 +32,7 @@ steps:
 
 images:
   - gcr.io/getenvoy-package/rbe-linux-glibc:$_GIT_SHA
+  - gcr.io/getenvoy-package/rbe-linux-glibc-fips:$_GIT_SHA
   - gcr.io/getenvoy-package/bazel-linux-glibc:$_GIT_SHA
 options:
   workerPool: 'getenvoy-package/envoy-build'

@@ -51,7 +51,7 @@ def cloneEnvoy(args):
 
     if args.override_envoy_repository and args.override_envoy_repository != '':
         repository = args.override_envoy_repository
-        commit = 'master'
+        commit = 'main'
         if args.override_envoy_commit and args.override_envoy_commit != '':
             commit = args.override_envoy_commit
         subprocess.check_call(['git', 'clone', repository, 'envoy-override'])
@@ -208,7 +208,7 @@ def main():
                         default="envoy",
                         choices=["envoy", "istio-proxy"])
     parser.add_argument('--envoy_commit',
-                        default=os.environ.get("ENVOY_COMMIT", 'master'))
+                        default=os.environ.get("ENVOY_COMMIT", 'main'))
     parser.add_argument('--envoy_repo')
     parser.add_argument('--override_envoy_repository')
     parser.add_argument('--override_envoy_commit')
