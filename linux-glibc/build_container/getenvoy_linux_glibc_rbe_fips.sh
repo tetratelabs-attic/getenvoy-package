@@ -18,7 +18,7 @@ set -e
 
 export DEBIAN_FRONTEND=noninteractive
 
-curl -sSL https://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz | \
+curl -sSL http://storage.googleapis.com/getenvoy-package/clang-toolchain/0e9d364b7199f3aaecbaf914cea3d9df4e97b850/clang+llvm-9.0.0-x86_64-linux-centos7.tar.xz | \
   tar Jx --strip-components=1 -C /usr/local
 
 # Force libc++ to be a static link by putting a linker script to do that.
