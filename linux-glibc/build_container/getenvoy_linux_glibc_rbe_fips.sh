@@ -22,4 +22,4 @@ curl -sSL http://storage.googleapis.com/getenvoy-package/clang-toolchain/0e9d364
   tar Jx --strip-components=1 -C /usr/local
 
 # Force libc++ to be a static link by putting a linker script to do that.
-echo 'INPUT(-l:libc++.a -l:libc++abi.a -lm -lpthread)' > /usr/local/lib/libc++.so
+#echo 'INPUT(-l:libc++.a -l:libc++abi.a -lm -lpthread)' > /usr/local/lib/libc++.so
