@@ -37,7 +37,8 @@ def checkBintray(args):
         request = urllib.request.Request(bintray_url, headers=headers)
         request.get_method = lambda: 'GET'
         response = urllib.request.urlopen(request)
-        files = json.loads(response.read())
+        str_response = response.readall().decode('utf-8')
+        files = json.loads(str_response)
 
         for existing_file in files:
             if "name" not in existing_file:
