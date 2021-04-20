@@ -160,7 +160,7 @@ def storeArtifacts(args, workspace_info):
 
 def bailIfPackagesExist(args, workspace_info):
     rc = subprocess.call([
-        './bintray_uploader.py', '--version',
+        './cloudsmith_uploader.py', '--version',
         version.debVersion(workspace_info), '--check_nonexisting',
         os.path.join(args.artifacts_directory,
                      version.tarFileName(workspace_info))
@@ -169,7 +169,7 @@ def bailIfPackagesExist(args, workspace_info):
         sys.exit(0)
 
     rc = subprocess.call([
-        './bintray_uploader.py', '--version',
+        './cloudsmith_uploader.py', '--version',
         version.debVersion(workspace_info), '--check_nonexisting',
         os.path.join(args.artifacts_directory,
                      version.tarFileName(workspace_info, symbol=True))
@@ -184,14 +184,14 @@ def uploadArtifacts(args, workspace_info):
     if args.override:
         override_args = ['--override']
     exists = subprocess.call([
-        './bintray_uploader.py', '--version',
+        './cloudsmith_uploader.py', '--version',
         version.debVersion(workspace_info),
         os.path.join(directory, version.tarFileName(workspace_info))
     ] + override_args)
     if exists != 0:
         return
     exists = subprocess.call([
-        './bintray_uploader.py',
+        './cloudsmith_uploader.py',
         '--version',
         version.debVersion(workspace_info),
         os.path.join(directory, version.tarFileName(workspace_info,
@@ -201,7 +201,7 @@ def uploadArtifacts(args, workspace_info):
         return
     if args.build_deb_package:
         subprocess.check_call([
-            './bintray_uploader_deb.py',
+            './cloudsmith_uploader_deb.py',
             '--variant',
             workspace_info['variant'],
             '--deb_version',
@@ -212,7 +212,7 @@ def uploadArtifacts(args, workspace_info):
         ])
     if args.build_rpm_package:
         subprocess.check_call([
-            './bintray_uploader_rpm.py',
+            './cloudsmith_uploader_rpm.py',
             '--variant',
             workspace_info['variant'],
             '--rpm_version',
@@ -236,7 +236,7 @@ def uploadArtifacts(args, workspace_info):
         ])
     if args.build_istio_compat:
         subprocess.call([
-            './bintray_uploader.py',
+            './cloudsmith_uploader.py',
             '--version',
             version.debVersion(workspace_info),
             os.path.join(directory,
@@ -246,7 +246,7 @@ def uploadArtifacts(args, workspace_info):
         # Istio doesn't have a concept of debug stripped builds.
         if workspace_info["release_level"] == "stable":
             subprocess.call([
-                './bintray_uploader.py',
+                './cloudsmith_uploader.py',
                 '--version',
                 version.debVersion(workspace_info),
                 os.path.join(directory, version.istioTarFileName(
@@ -309,7 +309,7 @@ def main():
                         default=os.environ.get("ENVOY_BUILD_CONFIG",
                                                "release"))
     parser.add_argument('--target')
-    parser.add_argument('--binary_path')
+    parser.add_argument('--cloudsmith_path')
     parser.add_argument('--build_deb_package',
                         action='store_true',
                         default=(os.environ.get("BUILD_DEB_PACKAGE",

@@ -38,10 +38,9 @@ def tagAndPush(image, target):
     subprocess.check_call(['docker', 'push', target])
 
 
-def uploadToBintrayDocker(args):
-    docker_repo = '{}-docker-{}.bintray.io'.format(args.bintray_org,
-                                                   args.bintray_repo)
-    dockerLogin(docker_repo, args.bintray_auth)
+def uploadToCloudsmithDocker(args):
+    docker_repo = 'docker.cloudsmith.io'
+    dockerLogin(docker_repo, args.cloudsmith_auth)
 
     image_tag = '{}/{}/{}:{}'.format(docker_repo, 'distroless', args.variant,
                                      args.docker_version)
@@ -71,15 +70,15 @@ def uploadToDockerHub(args):
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    parser = argparse.ArgumentParser(description="Bintray uploading script")
+    parser = argparse.ArgumentParser(description="Docker image uploading script")
     parser.add_argument('--docker_version', required=True)
     parser.add_argument('--variant', required=True)
-    parser.add_argument('--bintray_auth',
-                        default=os.environ.get("BINTRAY_AUTH"))
-    parser.add_argument('--bintray_org',
-                        default=os.environ.get("BINTRAY_ORG", "tetrate"))
-    parser.add_argument('--bintray_repo',
-                        default=os.environ.get("BINTRAY_DOCKER_REPO",
+    parser.add_argument('--cloudsmith_auth',
+                        default=os.environ.get("CLOUDSMITH_AUTH"))
+    parser.add_argument('--cloudsmith_org',
+                        default=os.environ.get("CLOUDSMITH_ORG", "tetrate"))
+    parser.add_argument('--cloudsmith_repo',
+                        default=os.environ.get("CLOUDSMITH_DOCKER_REPO",
                                                "getenvoy-docker"))
     parser.add_argument('--additional_docker_tag',
                         default=os.environ.get("ADDITIONAL_DOCKER_TAG", None))
@@ -89,8 +88,8 @@ def main():
 
     args = parser.parse_args()
 
-    if args.bintray_auth:
-        uploadToBintrayDocker(args)
+    if args.cloudsmith_auth:
+        uploadToCloudSmithDocker(args)
     if args.dockerhub_auth and not os.environ.get("NODOCKERHUB_PUSH", False):
         uploadToDockerHub(args)
 

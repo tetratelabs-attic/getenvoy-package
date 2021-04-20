@@ -24,7 +24,7 @@ import urllib.request
 import urllib.error
 import urllib.parse
 
-from bintray_uploader import uploadToBintray
+from cloudsmith_uploader import uploadToCloudsmith
 
 
 def upload(args):
@@ -35,13 +35,12 @@ def upload(args):
         package_name)
     args.version = args.tag
     args.filename = package_name
-    uploadToBintray(args, override=True)
+    uploadToCloudsmith(args, override=True)
 
 
 def download(args):
-    headers = {'Authorization': 'Basic {}'.format(args.bintray_auth)}
-    build_context_url = 'https://tetrate.bintray.com/{}/envoy-package-build-{}.tar'.format(
-        args.bintray_repo, args.tag)
+    build_context_url = 'https://dl.cloudsmith.io/public/tetrate/{}/raw/files/{}/envoy-package-build-{}.tar'.format(
+        args.cloudsmith_repo, args.tag)
     request = urllib.request.Request(build_context_url, headers=headers)
     build_context = urllib.request.urlopen(request)
     directory = os.path.expanduser('~/envoy-package/build-image/mac')
@@ -55,8 +54,8 @@ def download(args):
             tar.extractall(path=args.build_context_path)
 
 
-# NOTE: Tetrate's Mac CI pipeline depends on these bintray_org, bintray_repo,
-#       bintray_pkg, and package_name to download build contexts.
+# NOTE: Tetrate's Mac CI pipeline depends on these cloudsmith_org, cloudsmith_repo,
+#       cloudsmith_pkg, and package_name to download build contexts.
 def main():
     logging.basicConfig(level=logging.INFO)
 
@@ -67,18 +66,18 @@ def main():
     parser.add_argument('--build_context_path',
                         default=os.environ.get("BUILD_CONTEXT_PATH",
                                                '/usr/local/opt'))
-    parser.add_argument('--bintray_auth',
-                        default=os.environ.get("BINTRAY_AUTH"))
-    parser.add_argument('--bintray_org',
-                        default=os.environ.get("BINTRAY_ORG", "tetrate"))
-    parser.add_argument('--bintray_repo',
-                        default=os.environ.get("BINTRAY_BUILD_CONTEXT_REPO",
+    parser.add_argument('--cloudsmith_auth',
+                        default=os.environ.get("CLOUDSMITH_AUTH"))
+    parser.add_argument('--cloudsmith_org',
+                        default=os.environ.get("CLOUDSMITH_ORG", "tetrate"))
+    parser.add_argument('--cloudsmith_repo',
+                        default=os.environ.get("CLOUDSMITH_BUILD_CONTEXT_REPO",
                                                "envoy-package-build"))
-    parser.add_argument('--bintray_pkg',
-                        default=os.environ.get("BINTRAY_BUILD_CONTEXT_PKG",
+    parser.add_argument('--cloudsmith_pkg',
+                        default=os.environ.get("CLOUDSMITH_BUILD_CONTEXT_PKG",
                                                'envoy-package-build:darwin'))
     parser.add_argument('--tag',
-                        default=os.environ.get("BINTRAY_TAG", 'latest'))
+                        default=os.environ.get("CLOUDSMITH_TAG", 'latest'))
 
     args = parser.parse_args()
     os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
