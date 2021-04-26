@@ -38,21 +38,6 @@ def tagAndPush(image, target):
     subprocess.check_call(['docker', 'push', target])
 
 
-def uploadToCloudsmithDocker(args):
-    docker_repo = 'docker.cloudsmith.io'
-    dockerLogin(docker_repo, args.cloudsmith_auth)
-
-    image_tag = '{}/{}/{}:{}'.format(docker_repo, 'distroless', args.variant,
-                                     args.docker_version)
-    tagAndPush(args.image, image_tag)
-
-    if args.additional_docker_tag:
-        image_tag = '{}/{}/{}:{}'.format(docker_repo, 'distroless',
-                                         args.variant,
-                                         args.additional_docker_tag)
-        tagAndPush(args.image, image_tag)
-
-
 def uploadToDockerHub(args):
     docker_repo = 'docker.io'
     dockerLogin(docker_repo, args.dockerhub_auth)
@@ -73,13 +58,6 @@ def main():
     parser = argparse.ArgumentParser(description="Docker image uploading script")
     parser.add_argument('--docker_version', required=True)
     parser.add_argument('--variant', required=True)
-    parser.add_argument('--cloudsmith_auth',
-                        default=os.environ.get("CLOUDSMITH_AUTH"))
-    parser.add_argument('--cloudsmith_org',
-                        default=os.environ.get("CLOUDSMITH_ORG", "tetrate"))
-    parser.add_argument('--cloudsmith_repo',
-                        default=os.environ.get("CLOUDSMITH_DOCKER_REPO",
-                                               "getenvoy-docker"))
     parser.add_argument('--additional_docker_tag',
                         default=os.environ.get("ADDITIONAL_DOCKER_TAG", None))
     parser.add_argument('--dockerhub_auth',
@@ -88,10 +66,10 @@ def main():
 
     args = parser.parse_args()
 
-    if args.cloudsmith_auth:
-        uploadToCloudSmithDocker(args)
-    if args.dockerhub_auth and not os.environ.get("NODOCKERHUB_PUSH", False):
+    if args.dockerhub_auth:
         uploadToDockerHub(args)
+    else:
+        logging.error("Docker Hub auth required")
 
 
 if __name__ == "__main__":
