@@ -33,8 +33,8 @@ def writeToTempFile(content):
 
 
 def putBuildRevisionFile():
-    build_revision = subprocess.check_output('git rev-parse --short=7 HEAD',
-                                             shell=True).strip()
+    build_revision = subprocess.check_output(
+        'git rev-parse --short=7 HEAD', shell=True).strip()
     modified = subprocess.check_output(
         'git diff-index --quiet HEAD -- || echo -modified',
         shell=True).strip()

@@ -126,15 +126,16 @@ def writeVersionBzl(args):
     arch = platform.machine()
     deb_arch = arch if arch != 'x86_64' else 'amd64'
 
-    version_info = dict(variant=variant,
-                        tar_suffix=args.tar_suffix,
-                        envoy_committer_date=envoy_committer_date,
-                        source_version=source_version,
-                        architecture=arch,
-                        debian_architecture=deb_arch,
-                        getenvoy_release=package_release,
-                        release_level=args.release_level,
-                        git_revision=revision)
+    version_info = dict(
+        variant=variant,
+        tar_suffix=args.tar_suffix,
+        envoy_committer_date=envoy_committer_date,
+        source_version=source_version,
+        architecture=arch,
+        debian_architecture=deb_arch,
+        getenvoy_release=package_release,
+        release_level=args.release_level,
+        git_revision=revision)
     with open(WORKSPACE_INFO_FILE, 'w') as version_bzl:
         version_bzl.write("PACKAGE_VERSION = {}\n".format(repr(version_info)))
 
@@ -178,8 +179,10 @@ def setupBazelWorkspace(variant):
 
     with open('WORKSPACE', 'a+') as workspace:
         with open('getenvoy.WORKSPACE') as append:
-            workspace.write(append.read().replace(
-                '{RBE_IMAGE_TAG}', os.environ.get('RBE_IMAGE_TAG', 'latest')))
+            workspace.write(append.read().replace('{RBE_IMAGE_TAG}',
+                                                  os.environ.get(
+                                                      'RBE_IMAGE_TAG',
+                                                      'latest')))
 
     if variant == "istio-proxy":
         shutil.copyfile('envoy/envoy.bazelrc', 'envoy.bazelrc')
@@ -187,8 +190,8 @@ def setupBazelWorkspace(variant):
     patches = glob.glob("patches/" + variant + "/*.patch")
     for p in patches:
         patch_file = open(p)
-        result = subprocess.run(['patch', '-p1', '--ignore-whitespace'],
-                                stdin=patch_file)
+        result = subprocess.run(
+            ['patch', '-p1', '--ignore-whitespace'], stdin=patch_file)
         if result.returncode != 0:
             raise Exception("Failed to setup workspace")
 
@@ -204,19 +207,18 @@ def setup(args):
 def main():
     parser = argparse.ArgumentParser(
         description="Set up getenvoy package workspace")
-    parser.add_argument('--variant',
-                        default="envoy",
-                        choices=["envoy", "istio-proxy"])
-    parser.add_argument('--envoy_commit',
-                        default=os.environ.get("ENVOY_COMMIT", 'main'))
+    parser.add_argument(
+        '--variant', default="envoy", choices=["envoy", "istio-proxy"])
+    parser.add_argument(
+        '--envoy_commit', default=os.environ.get("ENVOY_COMMIT", 'main'))
     parser.add_argument('--envoy_repo')
     parser.add_argument('--override_envoy_repository')
     parser.add_argument('--override_envoy_commit')
-    parser.add_argument('--dist',
-                        default='unknown-{}'.format(platform.system().lower()))
+    parser.add_argument(
+        '--dist', default='unknown-{}'.format(platform.system().lower()))
     parser.add_argument('--tar_suffix', default='default')
-    parser.add_argument('--config',
-                        default=os.environ.get("ENVOY_BUILD_CONFIG"))
+    parser.add_argument(
+        '--config', default=os.environ.get("ENVOY_BUILD_CONFIG"))
     parser.add_argument('--cleanup', action='store_true')
     args = parser.parse_args()
 

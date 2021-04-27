@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2019 Tetrate
+# Copyright 2021 Tetrate
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,62 +23,66 @@ import tarfile
 import urllib.request
 import urllib.error
 import urllib.parse
+from typing import Any
 
-from bintray_uploader import uploadToBintray
+from cloudsmith_uploader import upload_to_cloudsmith_raw as upload_to_cloudsmith
 
 
-def upload(args):
-    package_name = 'envoy-package-build-{}.tar'.format(args.tag)
+# upload the Mac build tar
+def upload_build_context(args: Any) -> None:
+    package_name = "envoy-package-build-{}.tar".format(args.version)
     shutil.copy(
-        os.path.expanduser(
-            '~/envoy-package/build-image/mac/envoy-package-build.tar'),
-        package_name)
-    args.version = args.tag
+        os.path.expanduser("~/envoy-package/build-image/mac/envoy-package-build.tar"),
+        package_name,
+    )
     args.filename = package_name
-    uploadToBintray(args, override=True)
+    upload_to_cloudsmith(args, override=True)
 
 
-def download(args):
-    headers = {'Authorization': 'Basic {}'.format(args.bintray_auth)}
-    build_context_url = 'https://tetrate.bintray.com/{}/envoy-package-build-{}.tar'.format(
-        args.bintray_repo, args.tag)
-    request = urllib.request.Request(build_context_url, headers=headers)
+def download_build_context(args: Any) -> None:
+    # this tar is used to build the Darwin release binaries
+    # TODO: utilise the build artifact sharing instead of uploading/downloading the `tar` back and forth
+    build_context_url = "https://dl.cloudsmith.io/public/tetrate/{}/raw/files/envoy-package-build-{}.tar".format(
+        args.cloudsmith_repo,
+        args.tag,
+    )
+    request = urllib.request.Request(build_context_url)
     build_context = urllib.request.urlopen(request)
-    directory = os.path.expanduser('~/envoy-package/build-image/mac')
+    directory = os.path.expanduser("~/envoy-package/build-image/mac")
     if not os.path.exists(directory):
         os.makedirs(directory)
-    tar_file = os.path.join(directory, 'envoy-package-build.tar')
-    with open(tar_file, 'wb') as output:
+    tar_file = os.path.join(directory, "envoy-package-build.tar")
+    with open(tar_file, "wb") as output:
         output.write(build_context.read())
     if not args.noextract:
         with tarfile.open(tar_file) as tar:
             tar.extractall(path=args.build_context_path)
 
 
-# NOTE: Tetrate's Mac CI pipeline depends on these bintray_org, bintray_repo,
-#       bintray_pkg, and package_name to download build contexts.
-def main():
+# NOTE: Tetrate's Mac CI pipeline depends on these cloudsmith_org, cloudsmith_repo,
+# and package_name to download build contexts.
+def main() -> int:
     logging.basicConfig(level=logging.INFO)
 
     parser = argparse.ArgumentParser(description="Build context manager")
-    parser.add_argument('--upload', action='store_true')
-    parser.add_argument('--download', action='store_true')
-    parser.add_argument('--noextract', action='store_true')
-    parser.add_argument('--build_context_path',
-                        default=os.environ.get("BUILD_CONTEXT_PATH",
-                                               '/usr/local/opt'))
-    parser.add_argument('--bintray_auth',
-                        default=os.environ.get("BINTRAY_AUTH"))
-    parser.add_argument('--bintray_org',
-                        default=os.environ.get("BINTRAY_ORG", "tetrate"))
-    parser.add_argument('--bintray_repo',
-                        default=os.environ.get("BINTRAY_BUILD_CONTEXT_REPO",
-                                               "envoy-package-build"))
-    parser.add_argument('--bintray_pkg',
-                        default=os.environ.get("BINTRAY_BUILD_CONTEXT_PKG",
-                                               'envoy-package-build:darwin'))
-    parser.add_argument('--tag',
-                        default=os.environ.get("BINTRAY_TAG", 'latest'))
+    parser.add_argument("--upload", action="store_true")
+    parser.add_argument("--download", action="store_true")
+    parser.add_argument("--noextract", action="store_true")
+    parser.add_argument(
+        "--build_context_path",
+        default=os.environ.get("BUILD_CONTEXT_PATH", "/usr/local/opt"),
+    )
+    parser.add_argument(
+        "--cloudsmith_auth", default=os.environ.get("CLOUDSMITH_AUTH_TOKEN")
+    )
+    parser.add_argument(
+        "--cloudsmith_org", default=os.environ.get("CLOUDSMITH_ORG", "tetrate")
+    )
+    parser.add_argument(
+        "--cloudsmith_repo",
+        default=os.environ.get("CLOUDSMITH_BUILD_CONTEXT_REPO", "envoy-package-build"),
+    )
+    parser.add_argument("--version", required=True)
 
     args = parser.parse_args()
     os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
@@ -86,10 +90,11 @@ def main():
     assert args.upload != args.download, "Either upload or download must be specified"
 
     if args.upload:
-        upload(args)
+        upload_build_context(args)
     elif args.download:
-        download(args)
+        download_build_context(args)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
