@@ -65,6 +65,13 @@ message Build {
       LINUX_GLIBC = 3;
    }
 
+   enum Architecture {
+      UNKNOWN = 0;
+      X86_64 = 1;
+      ARM64 = 2;
+   }
+
    Platform platform = 1;
    string download_location_url = 2;
+   Architecture architecture = 3;
 }
