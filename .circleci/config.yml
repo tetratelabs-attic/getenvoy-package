@@ -36,6 +36,7 @@ jobs:
     <<: *mac
     steps:
       - checkout
+      - run: pip3 install --upgrade cloudsmith-cli
       - run: git status # to fix CircleCI spurious git error
       - run: make push
       - persist_to_workspace:
@@ -88,7 +89,7 @@ jobs:
     steps:
       - checkout
       - run: git status # to fix CircleCI spurious git error
-      - run: ./envoy_pkg/build_context.py --download --tag $CIRCLE_SHA1
+      - run: ./envoy_pkg/build_context.py --download --version $CIRCLE_SHA1
       - run: /usr/local/opt/envoy_pkg/package_envoy.py --test_package
 
 

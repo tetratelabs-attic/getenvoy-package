@@ -26,12 +26,12 @@ $(OUTPUT_DIR)/$(DISTRO)/build-context.tar: $(OUTPUT_DIR)/common-context.tar
 
 .PHONY: push
 push: $(OUTPUT_DIR)/$(DISTRO)/envoy-package-build.tar
-	@$(ENVOY_PKG_DIR)/build_context.py --upload --tag $(SHA)
+	@$(ENVOY_PKG_DIR)/build_context.py --upload --version $(SHA)
 
 .PHONY: release
 release:
-	@$(ENVOY_PKG_DIR)/build_context.py --download --noextract --tag $(SHA)
-	@$(ENVOY_PKG_DIR)/build_context.py --upload --tag latest
+	@$(ENVOY_PKG_DIR)/build_context.py --download --noextract --version $(SHA)
+	@$(ENVOY_PKG_DIR)/build_context.py --upload --version latest
 
 .PHONY: clean
 clean:
