@@ -22,7 +22,7 @@ brew unlink python@2 || true
 
 brew update
 brew upgrade
-brew install cmake coreutils go libtool ninja wget
+brew install cmake coreutils libtool ninja wget
 
 brew reinstall --force bazelisk
 brew link --overwrite bazelisk
