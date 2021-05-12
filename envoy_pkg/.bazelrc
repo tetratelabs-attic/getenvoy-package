@@ -45,6 +45,8 @@ build:linux-glibc-toolchain-common --javabase=@bazel_tools//tools/jdk:remote_jdk
 build:linux-glibc-toolchain-common --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 build:linux-glibc-toolchain-common --define force_libcpp=enabled
 build:linux-glibc-toolchain-common --action_env=CC=clang --action_env=CXX=clang++
+# External dependency (V8 Runtime) has some unused variables, thus failing the -Wall -Werror build.
+# Ignore this particular warning.
 build:linux-glibc-toolchain-common --action_env=CXXFLAGS="-stdlib=libc++ -Wno-unused-variable"
 
 build:linux-glibc-toolchain --config=linux-glibc-toolchain-common
