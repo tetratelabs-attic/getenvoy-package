@@ -57,13 +57,18 @@ def check_cloudsmith(args: Any) -> int:
 
 
 def upload_to_cloudsmith_raw(args, override=False) -> None:
-    cmd = "cloudsmith push raw --api-key {auth_token} {org}/{repo} {filename} --version {version}".format(
+    # Cloudsmith treats `latest` version as a special case
+    # Basically, if 2 files with the same filename but different version tags (except for `latest`, e.g. a SHA) are
+    # uploaded, CS auto-assigns the `latest` tag to the file that was uploaded later
+    # So, don't do the explicit `latest` tagging
+    cmd = "cloudsmith push raw --api-key {auth_token} {org}/{repo} {filename}".format(
         auth_token=args.cloudsmith_auth,
         org=args.cloudsmith_org,
         repo=args.cloudsmith_repo,
         filename=args.filename,
-        version=args.version,
     )
+    if args.version != "latest":
+        cmd += " --version {}".format(args.version)
     if override:
         cmd += " --republish"
     else:
