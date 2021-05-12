@@ -30,6 +30,7 @@ from cloudsmith_uploader import upload_to_cloudsmith_raw as upload_to_cloudsmith
 
 # upload the Mac build tar
 def upload_build_context(args: Any) -> None:
+    # this also re-uploads the `envoy-package-build-SHA.tar` file as `envoy-package-build-latest.tar`
     package_name = "envoy-package-build-{}.tar".format(args.version)
     shutil.copy(
         os.path.expanduser(
