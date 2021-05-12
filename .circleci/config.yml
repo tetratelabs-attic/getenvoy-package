@@ -66,6 +66,7 @@ jobs:
       - attach_workspace:
           at: ~/envoy-package
       - run: git status # to fix CircleCI spurious git error
+      - run: pip3 install --upgrade cloudsmith-cli
       - run: make release
 
   release_linux:
