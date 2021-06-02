@@ -83,15 +83,23 @@ build:linux-glibc-fips --config=linux-glibc-fips-toolchain
 build:linux-glibc-fips --define boringssl=fips
 build:linux-glibc-fips --config=remote
 
+build:linux-glibc-docker-common --spawn_strategy=docker
+build:linux-glibc-docker-common --strategy=Javac=docker
+build:linux-glibc-docker-common --strategy=Closure=docker
+build:linux-glibc-docker-common --strategy=Genrule=docker
+build:linux-glibc-docker-common --define=EXECUTOR=remote
+build:linux-glibc-docker-common --experimental_docker_verbose
+build:linux-glibc-docker-common --experimental_enable_docker_sandbox
+
 build:linux-glibc-docker --experimental_docker_image=gcr.io/getenvoy-package/rbe-linux-glibc@sha256:d375e3d9b7768d7dd033c44a8f19e6258caa98b5e5e39875bc81efe1ef33ad18
+build:linux-glibc-docker --config=linux-glibc-docker-common
 build:linux-glibc-docker --config=linux-glibc-toolchain
-build:linux-glibc-docker --spawn_strategy=docker
-build:linux-glibc-docker --strategy=Javac=docker
-build:linux-glibc-docker --strategy=Closure=docker
-build:linux-glibc-docker --strategy=Genrule=docker
-build:linux-glibc-docker --define=EXECUTOR=remote
-build:linux-glibc-docker --experimental_docker_verbose
-build:linux-glibc-docker --experimental_enable_docker_sandbox
+
+build:linux-glibc-fips-docker --experimental_docker_image=gcr.io/getenvoy-package/rbe-linux-glibc-fips:44d99529b1dc42a820f0ebb21563a954fcd0d826
+build:linux-glibc-fips-docker --config=linux-glibc-docker-common
+build:linux-glibc-fips-docker --config=linux-glibc-fips-toolchain
+build:linux-glibc-fips-docker --define boringssl=fips
+build:linux-glibc-fips-docker --action_env=PATH=/bin:/sbin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
 
 # This is no-op but if this doesn't exist bazel will error with non-exist config
 build:darwin --announce_rc
