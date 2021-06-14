@@ -39,6 +39,7 @@ def runBazel(command, targets, startup_options={}, options={}):
         if v:
             argv.append("--{}={}".format(k, v))
     argv.append(command)
+    # argv.append("--linkopt=-lc++")
     for k, v in options.items():
         if v:
             argv.extend(["--{}={}".format(k, i) for i in v])
@@ -297,7 +298,7 @@ def main():
     parser = argparse.ArgumentParser(description="Envoy packaging script")
     parser.add_argument("--variant",
                         default="envoy",
-                        choices=["envoy", "istio-proxy"])
+                        choices=["envoy", "istio-proxy", "envoy-fips"])
     parser.add_argument("--envoy_commit",
                         default=os.environ.get("ENVOY_COMMIT", "main"))
     parser.add_argument("--envoy_repo")

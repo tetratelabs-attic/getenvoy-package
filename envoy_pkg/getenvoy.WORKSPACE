@@ -68,10 +68,10 @@ rbe_autoconfig(
     create_java_configs = False,
     env = rbe_envs(),
     registry = "gcr.io",
-    repository = "getenvoy-package/rbe-linux-glibc-fips",
+    repository = "master-coder-313422/rbe-linux-glibc-fips",
     use_legacy_platform_definition = False,
     exec_properties = create_rbe_exec_properties_dict(docker_add_capabilities = "SYS_PTRACE,NET_RAW,NET_ADMIN", docker_network = "standard"),
-    tag = "{RBE_IMAGE_TAG}",
+    tag = "latest",
     use_checked_in_confs = "False",
 )
 

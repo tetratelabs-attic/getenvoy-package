@@ -25,6 +25,9 @@ DEFAULT_ARGUMENTS = {
     "envoy": {
         "ENVOY_REPO": "http://github.com/envoyproxy/envoy",
     },
+    "envoy-fips": {
+        "ENVOY_REPO": "http://github.com/envoyproxy/envoy",
+    },
     "istio-proxy": {
         "ENVOY_REPO": "http://github.com/istio/proxy",
     },
